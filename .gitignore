@@ -1,0 +1,14 @@
+# Node modules
+node_modules/
+
+# OS metadata
+.DS_Store
+
+# IDEs/editors
+.vscode/
+.idea/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
