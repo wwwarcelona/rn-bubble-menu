@@ -8,7 +8,7 @@ import { BubbleStyleProps } from './BubbleWrapper';
 
 export interface BubbleProps {
   label: string;
-  radius: number;
+  radius?: number;
   originalX?: number;
   originalY?: number;
   text?: string;
@@ -29,9 +29,9 @@ const DefaultBubble = forwardRef(({ label, radius, text, icon, style }: BubblePr
               styles.circle, 
               style?.circle,
               { 
-                width: radius*2, 
-                height: radius*2, 
-                borderRadius: radius,
+                width: (radius || 50)*2, 
+                height: (radius || 50)*2, 
+                borderRadius: radius || 50,
                 padding: icon ? 8 : 0,
               }
             ]}
@@ -43,8 +43,8 @@ const DefaultBubble = forwardRef(({ label, radius, text, icon, style }: BubblePr
                   styles.icon,
                   style?.icon,
                   { 
-                    width: radius * (text ? 0.8 : 1),
-                    height: radius * (text ? 0.8 : 1),
+                    width: (radius || 50) * (text ? 0.8 : 1),
+                    height: (radius || 50) * (text ? 0.8 : 1),
                     marginBottom: 4
                   }
                 ]}
@@ -54,7 +54,7 @@ const DefaultBubble = forwardRef(({ label, radius, text, icon, style }: BubblePr
               <Text style={[
                 styles.text,
                 style?.text,
-                { fontSize: icon ? radius/3.6 : 16 } // font size adapts to the radius of the bubble and the icon
+                { fontSize: icon ? (radius || 50)/3.6 : 16 } // font size adapts to the radius of the bubble and the icon
               ]}>{text}</Text>
             )}
           </View>

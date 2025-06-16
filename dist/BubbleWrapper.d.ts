@@ -8,7 +8,7 @@ export interface BubbleStyleProps {
 }
 export interface BubbleProps {
     label: string;
-    radius: number;
+    radius?: number;
     originalX?: number;
     originalY?: number;
     text?: string;

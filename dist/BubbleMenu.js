@@ -25,7 +25,7 @@ import { styles } from './styles';
 // BubbleMenu Component: Creates a circular menu with draggable bubbles that can interact with each other
 var BubbleMenu = function (_a) {
     var _b, _c, _d, _e, _f, _g, _h, _j;
-    var items = _a.items, menuRadius = _a.menuRadius, style = _a.style, bubbleComponent = _a.bubbleComponent;
+    var items = _a.items, menuDistance = _a.menuDistance, style = _a.style, bubbleComponent = _a.bubbleComponent;
     // Window dimensions and center points
     var _k = Dimensions.get('window'), width = _k.width, height = _k.height;
     var centerX = width / 2;
@@ -36,22 +36,23 @@ var BubbleMenu = function (_a) {
     // Utility Functions
     // Keep position within window bounds
     var constrainToWindow = function (pos, radius) { return ({
-        x: Math.max(0, Math.min(width - radius * 2, pos.x)),
-        y: Math.max(radius, Math.min(height - radius * 2, pos.y))
+        x: Math.max(40, Math.min(width - radius * 2 - 40, pos.x)),
+        y: Math.max(radius + 10, Math.min(height - radius * 2 - 10, pos.y))
     }); };
     // Calculates initial positions for all bubbles in a circular formation
     var initialPositions = useMemo(function () {
         return items.map(function (item, index) {
             var menuRotation = 4; // Controls the rotation of the bubble formation
             var angle = index === 0 ? 0 : (index * (2 * Math.PI)) / (items.length - 1) - Math.PI / menuRotation;
-            var radius = menuRadius + 130; // Distance between bubbles, minimum distance is 130
+            var radius = menuDistance + 130; // Distance between bubbles, minimum distance is 130
             var distance = index === 0 ? 0 : radius;
-            var x = centerX + Math.cos(angle) * distance - item.radius;
-            var y = centerY + Math.sin(angle) * distance - item.radius;
-            return constrainToWindow({ x: x, y: y }, item.radius); // Constrain the position to the window bounds
+            var x = centerX + Math.cos(angle) * distance - (item.radius || 50);
+            var y = centerY + Math.sin(angle) * distance - (item.radius || 50);
+            return constrainToWindow({ x: x, y: y }, item.radius || 50); // Constrain the position to the window bounds
         });
-    }, [items, centerX, centerY]);
+    }, [items, centerX, centerY, menuDistance]);
     var _m = useState(initialPositions), bubblePositions = _m[0], setBubblePositions = _m[1]; // State for the positions of the bubbles
+    console.log("bubblePositions", bubblePositions);
     // Bubble State Management
     // Checks if a specific bubble is being dragged
     var isBubbleDragging = function (i) { var _a; return (_a = bubbleRefs.current[items[i].label]) === null || _a === void 0 ? void 0 : _a.getIsDragging(); };
@@ -67,7 +68,7 @@ var BubbleMenu = function (_a) {
         var bubbleBPos = bubbleB.getPosition();
         var dx = bubbleBPos.x - bubbleAPos.x;
         var dy = bubbleBPos.y - bubbleAPos.y;
-        var minDist = items[i].radius + items[j].radius + 10; // Minimum distance between bubbles
+        var minDist = (items[i].radius || 50) + (items[j].radius || 50) + 10; // Minimum distance between bubbles
         return {
             distanceBetweenCenters: Math.hypot(dx, dy),
             dx: dx,
@@ -97,7 +98,7 @@ var BubbleMenu = function (_a) {
     // Handle collision between two bubbles
     var handleCollision = function (i, j) {
         // Distance data fetching
-        var _a = getDistanceData(i, j), distanceBetweenCenters = _a.distanceBetweenCenters, minDist = _a.minDist, bubbleA = _a.bubbleA, bubbleB = _a.bubbleB, dx = _a.dx, dy = _a.dy;
+        var _a = getDistanceData(i, j), minDist = _a.minDist, bubbleA = _a.bubbleA, bubbleB = _a.bubbleB, dx = _a.dx, dy = _a.dy;
         if (!bubbleA || !bubbleB) {
             console.warn('Cannot handle collision: bubble references are null');
             return;
@@ -246,7 +247,7 @@ var BubbleMenu = function (_a) {
                     top: (_e = (_d = bubblePositions[0]) === null || _d === void 0 ? void 0 : _d.y) !== null && _e !== void 0 ? _e : 0
                 }
             ] },
-            React.createElement(BubbleWrapper, __assign({}, items[0], { originalX: (_g = (_f = bubblePositions[0]) === null || _f === void 0 ? void 0 : _f.x) !== null && _g !== void 0 ? _g : 0, originalY: (_j = (_h = bubblePositions[0]) === null || _h === void 0 ? void 0 : _h.y) !== null && _j !== void 0 ? _j : 0, style: style === null || style === void 0 ? void 0 : style.bubble, bubbleComponent: bubbleComponent, setIsAnyBubbleDragging: setIsAnyBubbleDragging, ref: function (ref) {
+            React.createElement(BubbleWrapper, __assign({}, items[0], { radius: items[0].radius || 50, originalX: (_g = (_f = initialPositions[0]) === null || _f === void 0 ? void 0 : _f.x) !== null && _g !== void 0 ? _g : 0, originalY: (_j = (_h = initialPositions[0]) === null || _h === void 0 ? void 0 : _h.y) !== null && _j !== void 0 ? _j : 0, style: style === null || style === void 0 ? void 0 : style.bubble, bubbleComponent: bubbleComponent, setIsAnyBubbleDragging: setIsAnyBubbleDragging, ref: function (ref) {
                     if (ref) {
                         bubbleRefs.current[items[0].label || ""] = {
                             getPosition: ref.getPosition,
@@ -266,7 +267,7 @@ var BubbleMenu = function (_a) {
                         top: (_d = (_c = bubblePositions[actualIndex]) === null || _c === void 0 ? void 0 : _c.y) !== null && _d !== void 0 ? _d : 0,
                     }
                 ] },
-                React.createElement(BubbleWrapper, __assign({}, item, { originalX: (_f = (_e = bubblePositions[actualIndex]) === null || _e === void 0 ? void 0 : _e.x) !== null && _f !== void 0 ? _f : 0, originalY: (_h = (_g = bubblePositions[actualIndex]) === null || _g === void 0 ? void 0 : _g.y) !== null && _h !== void 0 ? _h : 0, style: style === null || style === void 0 ? void 0 : style.bubble, bubbleComponent: bubbleComponent, setIsAnyBubbleDragging: setIsAnyBubbleDragging, ref: function (ref) {
+                React.createElement(BubbleWrapper, __assign({}, item, { radius: item.radius || 50, originalX: (_f = (_e = initialPositions[actualIndex]) === null || _e === void 0 ? void 0 : _e.x) !== null && _f !== void 0 ? _f : 0, originalY: (_h = (_g = initialPositions[actualIndex]) === null || _g === void 0 ? void 0 : _g.y) !== null && _h !== void 0 ? _h : 0, style: style === null || style === void 0 ? void 0 : style.bubble, bubbleComponent: bubbleComponent, setIsAnyBubbleDragging: setIsAnyBubbleDragging, ref: function (ref) {
                         if (ref) {
                             bubbleRefs.current[item.label] = {
                                 getPosition: ref.getPosition,

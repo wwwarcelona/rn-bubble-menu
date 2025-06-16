@@ -14,7 +14,7 @@ export interface BubbleMenuStyleProps {
 
 interface BubbleMenuProps {
   items: BubbleProps[] // Array of bubbles to display
-  menuRadius: number // Radius of the menu
+  menuDistance: number // Radius of the menu
   style?: BubbleMenuStyleProps // Style for the menu and its bubbles
   bubbleComponent?: React.ComponentType<BubbleProps>;
 }
@@ -29,7 +29,7 @@ type BubbleRef = {
 
  // BubbleMenu Component: Creates a circular menu with draggable bubbles that can interact with each other
  
-const BubbleMenu = ({ items, menuRadius, style, bubbleComponent } : BubbleMenuProps) => {
+const BubbleMenu = ({ items, menuDistance, style, bubbleComponent } : BubbleMenuProps) => {
   // Window dimensions and center points
   const { width, height } = Dimensions.get('window');
   const centerX = width / 2;
@@ -42,8 +42,8 @@ const BubbleMenu = ({ items, menuRadius, style, bubbleComponent } : BubbleMenuPr
   // Utility Functions
   // Keep position within window bounds
   const constrainToWindow = (pos: Position, radius: number): Position => ({
-    x: Math.max(0, Math.min(width - radius * 2, pos.x)),
-    y: Math.max(radius, Math.min(height - radius * 2, pos.y))
+    x: Math.max(40, Math.min(width - radius * 2 - 40, pos.x)),
+    y: Math.max(radius + 10, Math.min(height - radius * 2 - 10, pos.y))
   });
 
   // Calculates initial positions for all bubbles in a circular formation
@@ -51,15 +51,16 @@ const BubbleMenu = ({ items, menuRadius, style, bubbleComponent } : BubbleMenuPr
     items.map((item, index) => {
       const menuRotation = 4; // Controls the rotation of the bubble formation
       const angle = index === 0 ? 0 : (index * (2 * Math.PI)) / (items.length - 1) - Math.PI / menuRotation;
-      const radius = menuRadius + 130; // Distance between bubbles, minimum distance is 130
+      const radius = menuDistance + 130; // Distance between bubbles, minimum distance is 130
       const distance = index === 0 ? 0 : radius;
-      const x = centerX + Math.cos(angle) * distance - item.radius;
-      const y = centerY + Math.sin(angle) * distance - item.radius;
+      const x = centerX + Math.cos(angle) * distance - (item.radius || 50);
+      const y = centerY + Math.sin(angle) * distance - (item.radius || 50);
       
-      return constrainToWindow({ x, y }, item.radius); // Constrain the position to the window bounds
-    }), [items, centerX, centerY]);
+      return constrainToWindow({ x, y }, item.radius || 50); // Constrain the position to the window bounds
+    }), [items, centerX, centerY, menuDistance]);
 
   const [bubblePositions, setBubblePositions] = useState<Position[]>(initialPositions); // State for the positions of the bubbles
+  console.log("bubblePositions", bubblePositions);
 
   // Bubble State Management
   // Checks if a specific bubble is being dragged
@@ -80,7 +81,7 @@ const BubbleMenu = ({ items, menuRadius, style, bubbleComponent } : BubbleMenuPr
     const bubbleBPos = bubbleB.getPosition();
     const dx = bubbleBPos.x - bubbleAPos.x;
     const dy = bubbleBPos.y - bubbleAPos.y;
-    const minDist = items[i].radius + items[j].radius + 10; // Minimum distance between bubbles
+    const minDist = (items[i].radius || 50) + (items[j].radius || 50) + 10; // Minimum distance between bubbles
 
     return { 
       distanceBetweenCenters: Math.hypot(dx, dy), 
@@ -113,7 +114,7 @@ const BubbleMenu = ({ items, menuRadius, style, bubbleComponent } : BubbleMenuPr
   // Handle collision between two bubbles
   const handleCollision = (i: number, j: number) => {
     // Distance data fetching
-    const { distanceBetweenCenters, minDist, bubbleA, bubbleB, dx, dy } = getDistanceData(i, j);
+    const { minDist, bubbleA, bubbleB, dx, dy } = getDistanceData(i, j);
 
     if (!bubbleA || !bubbleB) {
       console.warn('Cannot handle collision: bubble references are null');
@@ -290,8 +291,9 @@ const BubbleMenu = ({ items, menuRadius, style, bubbleComponent } : BubbleMenuPr
       ]}>
         <BubbleWrapper 
           {...items[0]}
-          originalX={bubblePositions[0]?.x ?? 0}
-          originalY={bubblePositions[0]?.y ?? 0}
+          radius={items[0].radius || 50}
+          originalX={initialPositions[0]?.x ?? 0}
+          originalY={initialPositions[0]?.y ?? 0}
           style={style?.bubble}
           bubbleComponent={bubbleComponent}
           setIsAnyBubbleDragging={setIsAnyBubbleDragging}
@@ -324,8 +326,9 @@ const BubbleMenu = ({ items, menuRadius, style, bubbleComponent } : BubbleMenuPr
           >
             <BubbleWrapper 
               {...item}
-              originalX={bubblePositions[actualIndex]?.x ?? 0}
-              originalY={bubblePositions[actualIndex]?.y ?? 0}
+              radius={item.radius || 50}
+              originalX={initialPositions[actualIndex]?.x ?? 0}
+              originalY={initialPositions[actualIndex]?.y ?? 0}
               style={style?.bubble}
               bubbleComponent={bubbleComponent}
               setIsAnyBubbleDragging={setIsAnyBubbleDragging}

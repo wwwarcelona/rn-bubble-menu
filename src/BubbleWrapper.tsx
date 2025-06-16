@@ -20,7 +20,7 @@ export interface BubbleStyleProps {
 // Props for the bubble component
 export interface BubbleProps {
   label: string;
-  radius: number;
+  radius?: number;
   originalX?: number;
   originalY?: number;
   text?: string;
