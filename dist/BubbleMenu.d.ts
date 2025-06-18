@@ -10,8 +10,11 @@ export interface BubbleMenuStyleProps {
 interface BubbleMenuProps {
     items: BubbleProps[];
     menuDistance: number;
+    height: number;
+    width: number;
+    bubbleRadius?: number;
     style?: BubbleMenuStyleProps;
     bubbleComponent?: React.ComponentType<BubbleProps>;
 }
-declare const BubbleMenu: ({ items, menuDistance, style, bubbleComponent }: BubbleMenuProps) => React.JSX.Element;
+declare const BubbleMenu: ({ items, menuDistance, height, width, bubbleRadius, style, bubbleComponent }: BubbleMenuProps) => React.JSX.Element;
 export default BubbleMenu;

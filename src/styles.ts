@@ -3,8 +3,12 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
   // App styles
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: 'transparent',
+    height: '100%',
+    width: '100%',
   },
 
   // Bubble styles
@@ -31,7 +35,6 @@ export const styles = StyleSheet.create({
   },
   centerBubble: {
     position: 'absolute',
-    backgroundColor: 'red',
     width: 100,
     height: 100,
     borderRadius: 50,

@@ -1,7 +1,11 @@
 export declare const styles: {
     container: {
-        flex: number;
+        display: "flex";
+        justifyContent: "center";
+        alignItems: "center";
         backgroundColor: string;
+        height: "100%";
+        width: "100%";
     };
     bubbleContainer: {
         position: "absolute";
@@ -24,7 +28,6 @@ export declare const styles: {
     };
     centerBubble: {
         position: "absolute";
-        backgroundColor: string;
         width: number;
         height: number;
         borderRadius: number;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ViewStyle, TextStyle, ImageStyle } from 'react-native';
+import { ImageStyle, TextStyle, ViewStyle } from 'react-native';
 export interface BubbleStyleProps {
     container?: ViewStyle;
     circle?: ViewStyle;

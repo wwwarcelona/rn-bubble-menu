@@ -1,13 +1,13 @@
 import React, {
+  forwardRef,
   useEffect,
-  useRef,
-  useState,
   useImperativeHandle,
-  forwardRef
+  useRef,
+  useState
 } from 'react';
-import {Animated, PanResponder, ViewStyle, TextStyle, ImageStyle, TouchableOpacity} from 'react-native';
-import { styles } from './styles';
+import { Animated, ImageStyle, PanResponder, TextStyle, TouchableOpacity, ViewStyle } from 'react-native';
 import DefaultBubble from './DefaultBubble';
+import { styles } from './styles';
 
 // Style interfaces for the bubble component
 export interface BubbleStyleProps {

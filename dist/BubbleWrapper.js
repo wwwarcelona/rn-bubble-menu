@@ -9,10 +9,10 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-import React, { useEffect, useRef, useState, useImperativeHandle, forwardRef } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Animated, PanResponder, TouchableOpacity } from 'react-native';
-import { styles } from './styles';
 import DefaultBubble from './DefaultBubble';
+import { styles } from './styles';
 // BubbleWrapper Component: Creates a draggable bubble with custom styling and behavior
 var BubbleWrapper = forwardRef(function (_a, ref) {
     var label = _a.label, radius = _a.radius, originalX = _a.originalX, originalY = _a.originalY, text = _a.text, icon = _a.icon, style = _a.style, bubbleComponent = _a.bubbleComponent, setIsAnyBubbleDragging = _a.setIsAnyBubbleDragging;
