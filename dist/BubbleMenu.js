@@ -57,12 +57,12 @@ var BubbleMenu = function (_a) {
     console.log("bubblePositions", bubblePositions);
     // Bubble State Management
     // Checks if a specific bubble is being dragged
-    var isBubbleDragging = function (i) { var _a; return (_a = bubbleRefs.current[items[i].label]) === null || _a === void 0 ? void 0 : _a.getIsDragging(); };
+    var isBubbleDragging = function (i) { var _a; return (_a = bubbleRefs.current[items[i].id]) === null || _a === void 0 ? void 0 : _a.getIsDragging(); };
     // Get distance data between two bubbles
     var getDistanceData = function (i, j) {
         var bubbles = bubbleRefs.current;
-        var bubbleA = bubbles[items[i].label];
-        var bubbleB = bubbles[items[j].label];
+        var bubbleA = bubbles[items[i].id];
+        var bubbleB = bubbles[items[j].id];
         if (!bubbleA || !bubbleB) {
             throw new Error("Bubble references not found for indices ".concat(i, " and ").concat(j));
         }
@@ -106,7 +106,7 @@ var BubbleMenu = function (_a) {
             return;
         }
         else {
-            console.log("Handling collision between ", items[i].label, " and ", items[j].label);
+            console.log("Handling collision between ", items[i].id, " and ", items[j].id);
         }
         var distance = Math.hypot(dx, dy);
         if (distance === 0)
@@ -152,10 +152,10 @@ var BubbleMenu = function (_a) {
     };
     var isBubbleOutOfPosition = function (index) {
         var initialPos = initialPositions[index];
-        var bubble = bubbleRefs.current[items[index].label];
+        var bubble = bubbleRefs.current[items[index].id];
         var bubblePos = bubble === null || bubble === void 0 ? void 0 : bubble.getPosition();
         if (!bubble) {
-            console.warn("Bubble reference not found for ".concat(items[index].label));
+            console.warn("Bubble reference not found for ".concat(items[index].id));
             return false;
         }
         var roundedInitialX = Math.round(initialPos.x);
@@ -169,9 +169,9 @@ var BubbleMenu = function (_a) {
         return items.some(function (item) {
             var index = items.indexOf(item);
             var initialPos = initialPositions[index];
-            var bubble = bubbleRefs.current[item.label];
+            var bubble = bubbleRefs.current[item.id];
             if (!bubble) {
-                console.warn("Bubble reference not found for ".concat(item.label));
+                console.warn("Bubble reference not found for ".concat(item.id));
                 return false;
             }
             var bubblePos = bubble.getPosition();
@@ -191,9 +191,9 @@ var BubbleMenu = function (_a) {
             var movableBubble = !collision.isColliding && isBubbleOutOfPosition(index);
             if (!isBubbleDragging(items.indexOf(item)) && movableBubble) {
                 var initialPos = initialPositions[index];
-                var bubble_1 = bubbleRefs.current[item.label];
+                var bubble_1 = bubbleRefs.current[item.id];
                 if (!bubble_1) {
-                    console.warn("Bubble reference not found for ".concat(item.label));
+                    console.warn("Bubble reference not found for ".concat(item.id));
                     return;
                 }
                 if (!bubble_1.getIsDragging()) {
@@ -249,19 +249,19 @@ var BubbleMenu = function (_a) {
                     top: (_e = (_d = bubblePositions[0]) === null || _d === void 0 ? void 0 : _d.y) !== null && _e !== void 0 ? _e : 0
                 }
             ] },
-            React.createElement(BubbleWrapper, __assign({}, items[0], { radius: bubbleRadius, originalX: (_g = (_f = initialPositions[0]) === null || _f === void 0 ? void 0 : _f.x) !== null && _g !== void 0 ? _g : 0, originalY: (_j = (_h = initialPositions[0]) === null || _h === void 0 ? void 0 : _h.y) !== null && _j !== void 0 ? _j : 0, style: style === null || style === void 0 ? void 0 : style.bubble, bubbleComponent: bubbleComponent, setIsAnyBubbleDragging: setIsAnyBubbleDragging, ref: function (ref) {
+            React.createElement(BubbleWrapper, { item: __assign(__assign({}, items[0]), { radius: bubbleRadius, originalX: (_g = (_f = initialPositions[0]) === null || _f === void 0 ? void 0 : _f.x) !== null && _g !== void 0 ? _g : 0, originalY: (_j = (_h = initialPositions[0]) === null || _h === void 0 ? void 0 : _h.y) !== null && _j !== void 0 ? _j : 0, style: style === null || style === void 0 ? void 0 : style.bubble }), bubbleComponent: bubbleComponent, setIsAnyBubbleDragging: setIsAnyBubbleDragging, ref: function (ref) {
                     if (ref) {
-                        bubbleRefs.current[items[0].label || ""] = {
+                        bubbleRefs.current[items[0].id || ""] = {
                             getPosition: ref.getPosition,
                             setPosition: ref.setPosition,
                             getIsDragging: ref.getIsDragging
                         };
                     }
-                } }))),
+                } })),
         items.slice(1).map(function (item, index) {
             var _a, _b, _c, _d, _e, _f, _g, _h;
             var actualIndex = index + 1;
-            return (React.createElement(View, { key: item.label, style: [
+            return (React.createElement(View, { key: item.id, style: [
                     styles.bubbleContainer,
                     style === null || style === void 0 ? void 0 : style.menuBubbleContainer,
                     {
@@ -269,15 +269,15 @@ var BubbleMenu = function (_a) {
                         top: (_d = (_c = bubblePositions[actualIndex]) === null || _c === void 0 ? void 0 : _c.y) !== null && _d !== void 0 ? _d : 0,
                     }
                 ] },
-                React.createElement(BubbleWrapper, __assign({}, item, { radius: bubbleRadius, originalX: (_f = (_e = initialPositions[actualIndex]) === null || _e === void 0 ? void 0 : _e.x) !== null && _f !== void 0 ? _f : 0, originalY: (_h = (_g = initialPositions[actualIndex]) === null || _g === void 0 ? void 0 : _g.y) !== null && _h !== void 0 ? _h : 0, style: style === null || style === void 0 ? void 0 : style.bubble, bubbleComponent: bubbleComponent, setIsAnyBubbleDragging: setIsAnyBubbleDragging, ref: function (ref) {
+                React.createElement(BubbleWrapper, { item: __assign(__assign({}, item), { radius: bubbleRadius, originalX: (_f = (_e = initialPositions[actualIndex]) === null || _e === void 0 ? void 0 : _e.x) !== null && _f !== void 0 ? _f : 0, originalY: (_h = (_g = initialPositions[actualIndex]) === null || _g === void 0 ? void 0 : _g.y) !== null && _h !== void 0 ? _h : 0, style: style === null || style === void 0 ? void 0 : style.bubble }), bubbleComponent: bubbleComponent, setIsAnyBubbleDragging: setIsAnyBubbleDragging, ref: function (ref) {
                         if (ref) {
-                            bubbleRefs.current[item.label] = {
+                            bubbleRefs.current[item.id] = {
                                 getPosition: ref.getPosition,
                                 setPosition: ref.setPosition,
                                 getIsDragging: ref.getIsDragging
                             };
                         }
-                    } }))));
+                    } })));
         })));
 };
 export default BubbleMenu;

@@ -7,23 +7,18 @@ export interface BubbleStyleProps {
     icon?: ImageStyle;
 }
 export interface BubbleProps {
-    label: string;
+    id: string;
     radius?: number;
     originalX?: number;
     originalY?: number;
     text?: string;
     icon?: any;
     style?: BubbleStyleProps;
-    bubbleComponent?: React.ComponentType<BubbleProps>;
+    key?: string;
+    onPress?: () => void;
 }
 export interface BubbleWrapperProps {
-    label: string;
-    radius: number;
-    originalX?: number;
-    originalY?: number;
-    text?: string;
-    icon?: any;
-    style?: BubbleStyleProps;
+    item: BubbleProps;
     bubbleComponent?: React.ComponentType<BubbleProps>;
     setIsAnyBubbleDragging: (isDragging: boolean) => void;
 }
