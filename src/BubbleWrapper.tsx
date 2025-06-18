@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState
 } from 'react';
-import { Animated, ImageStyle, PanResponder, TextStyle, TouchableOpacity, ViewStyle } from 'react-native';
+import { Animated, ImageStyle, PanResponder, Pressable, TextStyle, ViewStyle } from 'react-native';
 import DefaultBubble from './DefaultBubble';
 import { styles } from './styles';
 
@@ -19,25 +19,20 @@ export interface BubbleStyleProps {
 
 // Props for the bubble component
 export interface BubbleProps {
-  label: string;
+  id: string;
   radius?: number;
   originalX?: number;
   originalY?: number;
   text?: string;
   icon?: any; // Can be a require() image or a URL
   style?: BubbleStyleProps;
-  bubbleComponent?: React.ComponentType<BubbleProps>;
+  key?: string;
+  onPress?: () => void;
 }
 
 // Props for the bubble wrapper component
 export interface BubbleWrapperProps {
-  label: string;
-  radius: number;
-  originalX?: number;
-  originalY?: number;
-  text?: string;
-  icon?: any; // Can be a require() image or a URL
-  style?: BubbleStyleProps;
+  item: BubbleProps;
   bubbleComponent?: React.ComponentType<BubbleProps>;
   setIsAnyBubbleDragging: (isDragging: boolean) => void;
 }
@@ -50,19 +45,13 @@ export interface Position {
 
 // BubbleWrapper Component: Creates a draggable bubble with custom styling and behavior
 const BubbleWrapper = forwardRef(({ 
-  label, 
-  radius, 
-  originalX, 
-  originalY, 
-  text, 
-  icon, 
-  style, 
-  bubbleComponent, 
+  item, 
+  bubbleComponent,
   setIsAnyBubbleDragging 
 }: BubbleWrapperProps, ref) => {
   // Animation and state management
   const pan = useRef(new Animated.ValueXY()).current;
-  const [currentPosition, setCurrentPosition] = useState<Position>({ x: originalX!, y: originalY! });
+  const [currentPosition, setCurrentPosition] = useState<Position>({ x: item.originalX!, y: item.originalY! });
   const [isDragging, setIsDragging] = useState(false);
 
   // Expose methods to parent component
@@ -95,8 +84,8 @@ const BubbleWrapper = forwardRef(({
           y: gesture.dy,
         });
         setCurrentPosition({
-          x: originalX! + gesture.dx,
-          y: originalY! + gesture.dy
+          x: item.originalX! + gesture.dx,
+          y: item.originalY! + gesture.dy
         });
         setIsDragging(true);
       },
@@ -109,8 +98,8 @@ const BubbleWrapper = forwardRef(({
           useNativeDriver: true,
         }).start();
         setCurrentPosition({
-          x: originalX!,
-          y: originalY!
+          x: item.originalX!,
+          y: item.originalY!
         });
         setIsDragging(false);
       },
@@ -122,7 +111,7 @@ const BubbleWrapper = forwardRef(({
     <Animated.View 
       style={[
         styles.bubbleContainer,
-        style?.container,
+        item.style?.container,
         { 
           transform: [
             { translateX: pan.x },
@@ -132,19 +121,29 @@ const BubbleWrapper = forwardRef(({
       ]}
       {...panResponder.panHandlers}
     >
-      <TouchableOpacity onPress={() => {
-        console.log("Bubble ", label, " pressed");
-      }}>
-        {React.createElement(bubbleComponent || DefaultBubble, {
-          label,
-          radius,
-          originalX,
-          originalY,
-          text,
-          icon,
-          style,
+      <Pressable
+        key={item.key}
+        style={({ pressed }) => ({
+          opacity: pressed ? 0.8 : 1,
         })}
-      </TouchableOpacity>
+        onPress={item.onPress}
+      >
+        {(() => {
+          const Component = bubbleComponent || DefaultBubble;
+          return (
+            <Component
+              id={item.id}
+              label={item.id}
+              radius={item.radius}
+              originalX={item.originalX}
+              originalY={item.originalY}
+              text={item.text}
+              icon={item.icon}
+              style={item.style}
+            />
+          );
+        })()}
+      </Pressable>
     </Animated.View>
   );
 });

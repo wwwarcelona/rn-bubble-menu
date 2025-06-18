@@ -71,13 +71,13 @@ const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius, style, b
   // Bubble State Management
   // Checks if a specific bubble is being dragged
   const isBubbleDragging = (i: number) => 
-    bubbleRefs.current[items[i].label]?.getIsDragging();
+    bubbleRefs.current[items[i].id]?.getIsDragging();
 
   // Get distance data between two bubbles
   const getDistanceData = (i: number, j: number) => {
     const bubbles = bubbleRefs.current;
-    const bubbleA = bubbles[items[i].label];
-    const bubbleB = bubbles[items[j].label];
+    const bubbleA = bubbles[items[i].id];
+    const bubbleB = bubbles[items[j].id];
 
     if (!bubbleA || !bubbleB) {
       throw new Error(`Bubble references not found for indices ${i} and ${j}`);
@@ -126,7 +126,7 @@ const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius, style, b
       console.warn('Cannot handle collision: bubble references are null');
       return;
     } else {
-      console.log("Handling collision between ", items[i].label, " and ", items[j].label);
+      console.log("Handling collision between ", items[i].id, " and ", items[j].id);
     }
 
     const distance = Math.hypot(dx, dy);
@@ -180,11 +180,11 @@ const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius, style, b
   const isBubbleOutOfPosition = (index: number) => {
     const initialPos = initialPositions[index];
 
-    const bubble = bubbleRefs.current[items[index].label];
+    const bubble = bubbleRefs.current[items[index].id];
     const bubblePos = bubble?.getPosition();
 
     if (!bubble) {
-      console.warn(`Bubble reference not found for ${items[index].label}`);
+      console.warn(`Bubble reference not found for ${items[index].id}`);
       return false;
     }
 
@@ -201,10 +201,10 @@ const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius, style, b
     return items.some(item => {
       const index = items.indexOf(item);
       const initialPos = initialPositions[index];
-      const bubble = bubbleRefs.current[item.label];
+      const bubble = bubbleRefs.current[item.id];
 
       if (!bubble) {
-        console.warn(`Bubble reference not found for ${item.label}`);
+        console.warn(`Bubble reference not found for ${item.id}`);
         return false;
       }
 
@@ -229,10 +229,10 @@ const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius, style, b
 
       if (!isBubbleDragging(items.indexOf(item)) && movableBubble) {
         const initialPos = initialPositions[index];
-        const bubble = bubbleRefs.current[item.label];
+        const bubble = bubbleRefs.current[item.id];
 
         if (!bubble) {
-          console.warn(`Bubble reference not found for ${item.label}`);
+          console.warn(`Bubble reference not found for ${item.id}`);
           return;
         }
 
@@ -296,16 +296,18 @@ const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius, style, b
         }
       ]}>
         <BubbleWrapper 
-          {...items[0]}
-          radius={bubbleRadius}
-          originalX={initialPositions[0]?.x ?? 0}
-          originalY={initialPositions[0]?.y ?? 0}
-          style={style?.bubble}
+          item={{
+            ...items[0],
+            radius: bubbleRadius,
+            originalX: initialPositions[0]?.x ?? 0,
+            originalY: initialPositions[0]?.y ?? 0,
+            style: style?.bubble,
+          }}
           bubbleComponent={bubbleComponent}
           setIsAnyBubbleDragging={setIsAnyBubbleDragging}
           ref={(ref: BubbleRef) => {
             if (ref) {
-              bubbleRefs.current[items[0].label || ""] = {
+              bubbleRefs.current[items[0].id || ""] = {
                 getPosition: ref.getPosition,
                 setPosition: ref.setPosition,
                 getIsDragging: ref.getIsDragging
@@ -320,7 +322,7 @@ const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius, style, b
         const actualIndex = index + 1;
         return (
           <View 
-            key={item.label}
+            key={item.id}
             style={[
               styles.bubbleContainer,
               style?.menuBubbleContainer,
@@ -331,16 +333,18 @@ const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius, style, b
             ]}
           >
             <BubbleWrapper 
-              {...item}
-              radius={bubbleRadius}
-              originalX={initialPositions[actualIndex]?.x ?? 0}
-              originalY={initialPositions[actualIndex]?.y ?? 0}
-              style={style?.bubble}
+              item={{
+                ...item,
+                radius: bubbleRadius,
+                originalX: initialPositions[actualIndex]?.x ?? 0,
+                originalY: initialPositions[actualIndex]?.y ?? 0,
+                style: style?.bubble,
+              }}
               bubbleComponent={bubbleComponent}
               setIsAnyBubbleDragging={setIsAnyBubbleDragging}
               ref={(ref: BubbleRef) => {
                 if (ref) {
-                  bubbleRefs.current[item.label] = {
+                  bubbleRefs.current[item.id] = {
                     getPosition: ref.getPosition,
                     setPosition: ref.setPosition,
                     getIsDragging: ref.getIsDragging
