@@ -183,6 +183,24 @@ var BubbleMenu = function (_a) {
             return roundedInitialX !== roundedBubbleX || roundedInitialY !== roundedBubbleY;
         });
     };
+    // Helper: Check if moving a bubble to a position would cause a collision
+    var willCollideAtPosition = function (bubbleIndex, targetPos) {
+        for (var j = 0; j < items.length; j++) {
+            if (j === bubbleIndex)
+                continue;
+            var otherBubble = bubbleRefs.current[items[j].id];
+            if (!otherBubble)
+                continue;
+            var otherPos = otherBubble.getPosition();
+            var dx = otherPos.x - targetPos.x;
+            var dy = otherPos.y - targetPos.y;
+            var minDist = (bubbleRadius !== null && bubbleRadius !== void 0 ? bubbleRadius : 50) * 2 + 10;
+            if (Math.hypot(dx, dy) < minDist) {
+                return true;
+            }
+        }
+        return false;
+    };
     // Move bubbles back to their initial positions
     var moveBubblesBackToInitialPositions = function () {
         items.forEach(function (item) {
@@ -200,16 +218,13 @@ var BubbleMenu = function (_a) {
                     var bubblePos = bubble_1.getPosition();
                     var deltaX = (initialPos.x - bubblePos.x) * 0.05;
                     var deltaY = (initialPos.y - bubblePos.y) * 0.05;
-                    if (Math.abs(initialPos.x - bubblePos.x) < 0.5 && Math.abs(initialPos.y - bubblePos.y) < 0.5) {
-                        // Close enough, snap to position
-                        bubble_1.setPosition(initialPos);
-                    }
-                    else {
-                        // Otherwise, interpolate
-                        bubble_1.setPosition({
-                            x: bubblePos.x + deltaX,
-                            y: bubblePos.y + deltaY
-                        });
+                    var nextPos = {
+                        x: Math.abs(initialPos.x - bubblePos.x) < 0.5 ? initialPos.x : bubblePos.x + deltaX,
+                        y: Math.abs(initialPos.y - bubblePos.y) < 0.5 ? initialPos.y : bubblePos.y + deltaY
+                    };
+                    // Only move if it won't cause a collision
+                    if (!willCollideAtPosition(index, nextPos)) {
+                        bubble_1.setPosition(nextPos);
                     }
                 }
                 setBubblePositions(function (prev) {

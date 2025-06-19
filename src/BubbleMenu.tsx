@@ -220,6 +220,23 @@ const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius, style, b
     });    
   }
 
+  // Helper: Check if moving a bubble to a position would cause a collision
+  const willCollideAtPosition = (bubbleIndex: number, targetPos: Position) => {
+    for (let j = 0; j < items.length; j++) {
+      if (j === bubbleIndex) continue;
+      const otherBubble = bubbleRefs.current[items[j].id];
+      if (!otherBubble) continue;
+      const otherPos = otherBubble.getPosition();
+      const dx = otherPos.x - targetPos.x;
+      const dy = otherPos.y - targetPos.y;
+      const minDist = (bubbleRadius ?? 50) * 2 + 10;
+      if (Math.hypot(dx, dy) < minDist) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   // Move bubbles back to their initial positions
   const moveBubblesBackToInitialPositions = () => {
     items.forEach(item => {
@@ -240,16 +257,14 @@ const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius, style, b
           const bubblePos = bubble.getPosition();
           const deltaX = (initialPos.x - bubblePos.x) * 0.05;
           const deltaY = (initialPos.y - bubblePos.y) * 0.05;
-        
-          if (Math.abs(initialPos.x - bubblePos.x) < 0.5 && Math.abs(initialPos.y - bubblePos.y) < 0.5) {
-            // Close enough, snap to position
-            bubble.setPosition(initialPos);
-          } else {
-            // Otherwise, interpolate
-            bubble.setPosition({
-              x: bubblePos.x + deltaX,
-              y: bubblePos.y + deltaY
-            });
+          const nextPos = {
+            x: Math.abs(initialPos.x - bubblePos.x) < 0.5 ? initialPos.x : bubblePos.x + deltaX,
+            y: Math.abs(initialPos.y - bubblePos.y) < 0.5 ? initialPos.y : bubblePos.y + deltaY
+          };
+
+          // Only move if it won't cause a collision
+          if (!willCollideAtPosition(index, nextPos)) {
+            bubble.setPosition(nextPos);
           }
         }
 
