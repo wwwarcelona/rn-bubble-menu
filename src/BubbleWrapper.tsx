@@ -35,6 +35,8 @@ export interface BubbleWrapperProps {
   item: BubbleProps;
   bubbleComponent?: React.ComponentType<BubbleProps>;
   setIsAnyBubbleDragging: (isDragging: boolean) => void;
+  menuHeight: number;
+  menuWidth: number;
 }
 
 // Position interface for bubble coordinates
@@ -47,7 +49,9 @@ export interface Position {
 const BubbleWrapper = forwardRef(({ 
   item, 
   bubbleComponent,
-  setIsAnyBubbleDragging 
+  setIsAnyBubbleDragging,
+  menuHeight,
+  menuWidth
 }: BubbleWrapperProps, ref) => {
   // Animation and state management
   const pan = useRef(new Animated.ValueXY()).current;
@@ -70,6 +74,19 @@ const BubbleWrapper = forwardRef(({
     setIsAnyBubbleDragging(isDragging);
   }, [isDragging]);
 
+  // Helper to constrain position within bounds
+  const clampPosition = (x: number, y: number) => {
+    const radius = item.radius || 50;
+    const minX = 0;
+    const minY = 0;
+    const maxX = menuWidth - radius * 2;
+    const maxY = menuHeight - radius * 2;
+    return {
+      x: Math.max(minX, Math.min(maxX, x)),
+      y: Math.max(minY, Math.min(maxY, y)),
+    };
+  };
+
   // Pan responder for drag and drop functionality
   const panResponder = useRef(
     PanResponder.create({
@@ -79,14 +96,14 @@ const BubbleWrapper = forwardRef(({
 
       // Handle movement
       onPanResponderMove: (_, gesture) => {
+        const unclampedX = item.originalX! + gesture.dx;
+        const unclampedY = item.originalY! + gesture.dy;
+        const { x, y } = clampPosition(unclampedX, unclampedY);
         pan.setValue({
-          x: gesture.dx,
-          y: gesture.dy,
+          x: x - item.originalX!,
+          y: y - item.originalY!
         });
-        setCurrentPosition({
-          x: item.originalX! + gesture.dx,
-          y: item.originalY! + gesture.dy
-        });
+        setCurrentPosition({ x, y });
         setIsDragging(true);
       },
 

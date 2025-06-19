@@ -21,6 +21,8 @@ export interface BubbleWrapperProps {
     item: BubbleProps;
     bubbleComponent?: React.ComponentType<BubbleProps>;
     setIsAnyBubbleDragging: (isDragging: boolean) => void;
+    menuHeight: number;
+    menuWidth: number;
 }
 export interface Position {
     x: number;

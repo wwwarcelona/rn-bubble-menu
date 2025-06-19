@@ -16,7 +16,7 @@ import { styles } from './styles';
 // BubbleWrapper Component: Creates a draggable bubble with custom styling and behavior
 var BubbleWrapper = forwardRef(function (_a, ref) {
     var _b;
-    var item = _a.item, bubbleComponent = _a.bubbleComponent, setIsAnyBubbleDragging = _a.setIsAnyBubbleDragging;
+    var item = _a.item, bubbleComponent = _a.bubbleComponent, setIsAnyBubbleDragging = _a.setIsAnyBubbleDragging, menuHeight = _a.menuHeight, menuWidth = _a.menuWidth;
     // Animation and state management
     var pan = useRef(new Animated.ValueXY()).current;
     var _c = useState({ x: item.originalX, y: item.originalY }), currentPosition = _c[0], setCurrentPosition = _c[1];
@@ -35,6 +35,18 @@ var BubbleWrapper = forwardRef(function (_a, ref) {
     useEffect(function () {
         setIsAnyBubbleDragging(isDragging);
     }, [isDragging]);
+    // Helper to constrain position within bounds
+    var clampPosition = function (x, y) {
+        var radius = item.radius || 50;
+        var minX = 0;
+        var minY = 0;
+        var maxX = menuWidth - radius * 2;
+        var maxY = menuHeight - radius * 2;
+        return {
+            x: Math.max(minX, Math.min(maxX, x)),
+            y: Math.max(minY, Math.min(maxY, y)),
+        };
+    };
     // Pan responder for drag and drop functionality
     var panResponder = useRef(PanResponder.create({
         // Start dragging on touch
@@ -42,14 +54,14 @@ var BubbleWrapper = forwardRef(function (_a, ref) {
         onMoveShouldSetPanResponder: function () { return true; },
         // Handle movement
         onPanResponderMove: function (_, gesture) {
+            var unclampedX = item.originalX + gesture.dx;
+            var unclampedY = item.originalY + gesture.dy;
+            var _a = clampPosition(unclampedX, unclampedY), x = _a.x, y = _a.y;
             pan.setValue({
-                x: gesture.dx,
-                y: gesture.dy,
+                x: x - item.originalX,
+                y: y - item.originalY
             });
-            setCurrentPosition({
-                x: item.originalX + gesture.dx,
-                y: item.originalY + gesture.dy
-            });
+            setCurrentPosition({ x: x, y: y });
             setIsDragging(true);
         },
         // Handle release

@@ -49,7 +49,13 @@ const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius, style, b
   // Keep position within window bounds
   const constrainToWindow = (pos: Position, radius: number): Position => ({
     x: Math.max(40, Math.min(width - radius * 2 - 40, pos.x)),
-    y: Math.max(0,Math.min(height - radius * 2, pos.y))
+    y: Math.max(0, Math.min(height - radius * 2, pos.y))
+  });
+
+  // Clamp a position to the box bounds for a given radius
+  const clampPosition = (pos: Position, radius: number): Position => ({
+    x: Math.max(0, Math.min(width - radius * 2, pos.x)),
+    y: Math.max(0, Math.min(height - radius * 2, pos.y))
   });
 
   // Calculates initial positions for all bubbles in a circular formation
@@ -152,14 +158,18 @@ const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius, style, b
     console.log("Bubble B Pos: ", bubbleBPos);
 
     // Update positions with smooth interpolation
-    const updatedPosA = {
+    const radiusA = bubbleRadius;
+    const radiusB = bubbleRadius;
+    const unclampedPosA = {
       x: bubbleAPos.x - moveX,
       y: bubbleAPos.y - moveY
     };
-    const updatedPosB = {
+    const unclampedPosB = {
       x: bubbleBPos.x + moveX,
       y: bubbleBPos.y + moveY
     };
+    const updatedPosA = clampPosition(unclampedPosA, radiusA);
+    const updatedPosB = clampPosition(unclampedPosB, radiusB);
 
     console.log("Updated Pos A: ", updatedPosA);
     console.log("Updated Pos B: ", updatedPosB);
@@ -320,6 +330,8 @@ const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius, style, b
           }}
           bubbleComponent={bubbleComponent}
           setIsAnyBubbleDragging={setIsAnyBubbleDragging}
+          menuHeight={height}
+          menuWidth={width}
           ref={(ref: BubbleRef) => {
             if (ref) {
               bubbleRefs.current[items[0].id || ""] = {
@@ -357,6 +369,8 @@ const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius, style, b
               }}
               bubbleComponent={bubbleComponent}
               setIsAnyBubbleDragging={setIsAnyBubbleDragging}
+              menuHeight={height}
+              menuWidth={width}
               ref={(ref: BubbleRef) => {
                 if (ref) {
                   bubbleRefs.current[item.id] = {
