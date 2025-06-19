@@ -72,7 +72,7 @@ const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius, style, b
     }), [items, centerX, centerY, menuDistance, width, height]);
 
   const [bubblePositions, setBubblePositions] = useState<Position[]>(initialPositions); // State for the positions of the bubbles
-  console.log("bubblePositions", bubblePositions);
+  // console.log("bubblePositions", bubblePositions);
 
   // Bubble State Management
   // Checks if a specific bubble is being dragged
@@ -132,7 +132,7 @@ const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius, style, b
       console.warn('Cannot handle collision: bubble references are null');
       return;
     } else {
-      console.log("Handling collision between ", items[i].id, " and ", items[j].id);
+      // console.log("Handling collision between ", items[i].id, " and ", items[j].id);
     }
 
     const distance = Math.hypot(dx, dy);
@@ -152,10 +152,10 @@ const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius, style, b
     const bubbleAPos = bubbleA.getPosition();
     const bubbleBPos = bubbleB.getPosition();
 
-    console.log("Move X: ", moveX);
-    console.log("Move Y: ", moveY);
-    console.log("Bubble A Pos: ", bubbleAPos);
-    console.log("Bubble B Pos: ", bubbleBPos);
+    // console.log("Move X: ", moveX);
+    // console.log("Move Y: ", moveY);
+    // console.log("Bubble A Pos: ", bubbleAPos);
+    // console.log("Bubble B Pos: ", bubbleBPos);
 
     // Update positions with smooth interpolation
     const radiusA = bubbleRadius;
@@ -171,8 +171,8 @@ const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius, style, b
     const updatedPosA = clampPosition(unclampedPosA, radiusA);
     const updatedPosB = clampPosition(unclampedPosB, radiusB);
 
-    console.log("Updated Pos A: ", updatedPosA);
-    console.log("Updated Pos B: ", updatedPosB);
+    // console.log("Updated Pos A: ", updatedPosA);
+    // console.log("Updated Pos B: ", updatedPosB);
 
     // Apply new positions
     bubbleA.setPosition(updatedPosA);

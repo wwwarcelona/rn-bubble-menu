@@ -59,7 +59,7 @@ var BubbleMenu = function (_a) {
         });
     }, [items, centerX, centerY, menuDistance, width, height]);
     var _l = useState(initialPositions), bubblePositions = _l[0], setBubblePositions = _l[1]; // State for the positions of the bubbles
-    console.log("bubblePositions", bubblePositions);
+    // console.log("bubblePositions", bubblePositions);
     // Bubble State Management
     // Checks if a specific bubble is being dragged
     var isBubbleDragging = function (i) { var _a; return (_a = bubbleRefs.current[items[i].id]) === null || _a === void 0 ? void 0 : _a.getIsDragging(); };
@@ -111,7 +111,7 @@ var BubbleMenu = function (_a) {
             return;
         }
         else {
-            console.log("Handling collision between ", items[i].id, " and ", items[j].id);
+            // console.log("Handling collision between ", items[i].id, " and ", items[j].id);
         }
         var distance = Math.hypot(dx, dy);
         if (distance === 0)
@@ -127,10 +127,10 @@ var BubbleMenu = function (_a) {
         }
         var bubbleAPos = bubbleA.getPosition();
         var bubbleBPos = bubbleB.getPosition();
-        console.log("Move X: ", moveX);
-        console.log("Move Y: ", moveY);
-        console.log("Bubble A Pos: ", bubbleAPos);
-        console.log("Bubble B Pos: ", bubbleBPos);
+        // console.log("Move X: ", moveX);
+        // console.log("Move Y: ", moveY);
+        // console.log("Bubble A Pos: ", bubbleAPos);
+        // console.log("Bubble B Pos: ", bubbleBPos);
         // Update positions with smooth interpolation
         var radiusA = bubbleRadius;
         var radiusB = bubbleRadius;
@@ -144,8 +144,8 @@ var BubbleMenu = function (_a) {
         };
         var updatedPosA = clampPosition(unclampedPosA, radiusA);
         var updatedPosB = clampPosition(unclampedPosB, radiusB);
-        console.log("Updated Pos A: ", updatedPosA);
-        console.log("Updated Pos B: ", updatedPosB);
+        // console.log("Updated Pos A: ", updatedPosA);
+        // console.log("Updated Pos B: ", updatedPosB);
         // Apply new positions
         bubbleA.setPosition(updatedPosA);
         bubbleB.setPosition(updatedPosB);
