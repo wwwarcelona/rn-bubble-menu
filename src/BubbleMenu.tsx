@@ -318,8 +318,8 @@ const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius, style, b
         { 
           left: bubblePositions[0]?.x ?? 0, 
           top: bubblePositions[0]?.y ?? 0,
-          height: bubbleRadius * 2, // Fix for wrong positioning
-          width: bubbleRadius * 2 // Fix for wrong positioning
+          height: bubbleRadius * 2, // Fix for wrong positioning, bubbleWrapper bigger
+          width: bubbleRadius * 2 // Fix for wrong positioning, bubbleWrapper bigger
         }
       ]}>
         <BubbleWrapper 
@@ -358,8 +358,8 @@ const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius, style, b
               {
                 left: bubblePositions[actualIndex]?.x ?? 0,
                 top: bubblePositions[actualIndex]?.y ?? 0,
-                height: bubbleRadius * 2, // Fix for wrong positioning
-                width: bubbleRadius * 2 // Fix for wrong positioning
+                height: bubbleRadius * 2, // Fix for wrong positioning, bubbleWrapper bigger
+                width: bubbleRadius * 2 // Fix for wrong positioning, bubbleWrapepr bigger
               }
             ]}
           >
