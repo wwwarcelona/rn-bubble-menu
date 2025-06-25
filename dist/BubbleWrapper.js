@@ -10,7 +10,7 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 import React, { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, } from 'react';
-import { Animated, PanResponder, Pressable, } from 'react-native';
+import { Animated, PanResponder, TouchableOpacity, } from 'react-native';
 import DefaultBubble from './DefaultBubble';
 import { styles } from './styles';
 import { K } from './constants';
@@ -92,6 +92,9 @@ var BubbleWrapper = forwardRef(function (_a, ref) {
             avoidCollision.current = value;
         },
     }); }, [originalX, originalY, translation]);
+    /**
+     * Handles what happens when the Bubble is pressed
+     */
     var handleOnPress = useCallback(function () {
         if (!isDragging) {
             onPress();
@@ -201,12 +204,7 @@ var BubbleWrapper = forwardRef(function (_a, ref) {
             },
             animatedStyle, // Apply animated transforms
         ] }, panResponder.panHandlers),
-        React.createElement(Pressable, { key: item.key, style: function (_a) {
-                var pressed = _a.pressed;
-                return ({
-                    opacity: pressed ? 0.8 : 1, // Simple opacity feedback for touch
-                });
-            }, onPressOut: handleOnPress },
+        React.createElement(TouchableOpacity, { key: item.key, onPress: onPress },
             React.createElement(BubbleComponent, __assign({}, item, { radius: radius })))));
 });
 export default React.memo(BubbleWrapper);

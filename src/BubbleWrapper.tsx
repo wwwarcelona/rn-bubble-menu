@@ -11,6 +11,7 @@ import {
   PanResponder,
   Pressable,
   TextStyle,
+  TouchableOpacity,
   ViewStyle,
 } from 'react-native';
 import DefaultBubble from './DefaultBubble';
@@ -160,6 +161,9 @@ const BubbleWrapper = forwardRef<any, BubbleWrapperProps>(({
     },
   }), [originalX, originalY, translation]);
 
+  /**
+   * Handles what happens when the Bubble is pressed
+   */
   const handleOnPress = useCallback(() => {
     if (!isDragging) {
       onPress();
@@ -293,12 +297,9 @@ const BubbleWrapper = forwardRef<any, BubbleWrapperProps>(({
         Pressable wrapper for touch feedback and press handling
         Provides visual feedback during touch interactions
       */}
-      <Pressable
+      <TouchableOpacity
         key={item.key}
-        style={({ pressed }) => ({
-          opacity: pressed ? 0.8 : 1, // Simple opacity feedback for touch
-        })}
-        onPressOut={handleOnPress} // Execute bubble's onPress callback
+        onPress={onPress} // Execute bubble's onPress callback
       >
         {/* 
           Render the actual bubble component
@@ -308,7 +309,7 @@ const BubbleWrapper = forwardRef<any, BubbleWrapperProps>(({
             {...item}
             radius={radius}
         />
-      </Pressable>
+      </TouchableOpacity>
     </Animated.View>
   );
 });
