@@ -21,9 +21,10 @@ interface BubbleMenuProps {
     height: number;
     width: number;
     bubbleRadius?: number;
+    collisionRadius?: number;
     menuRotation?: number;
     style?: BubbleMenuStyleProps;
     bubbleComponent?: React.ComponentType<BubbleProps>;
 }
-declare const _default: React.MemoExoticComponent<({ items, menuDistance, height, width, bubbleRadius, menuRotation, style, bubbleComponent }: BubbleMenuProps) => React.JSX.Element>;
+declare const _default: React.MemoExoticComponent<({ items, menuDistance, height, width, bubbleRadius, collisionRadius, menuRotation, style, bubbleComponent }: BubbleMenuProps) => React.JSX.Element>;
 export default _default;

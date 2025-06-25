@@ -93,14 +93,6 @@ var BubbleWrapper = forwardRef(function (_a, ref) {
         },
     }); }, [originalX, originalY, translation]);
     /**
-     * Handles what happens when the Bubble is pressed
-     */
-    var handleOnPress = useCallback(function () {
-        if (!isDragging) {
-            onPress();
-        }
-    }, [onPress]);
-    /**
      * Boundary Constraint System
      * Ensures bubbles remain within visible container bounds
      * Accounts for bubble radius to prevent visual clipping
