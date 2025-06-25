@@ -27,7 +27,7 @@ import { K } from './constants';
  *
  */
 var BubbleMenu = function (_a) {
-    var items = _a.items, menuDistance = _a.menuDistance, height = _a.height, width = _a.width, _b = _a.bubbleRadius, bubbleRadius = _b === void 0 ? 50 : _b, _c = _a.menuRotation, menuRotation = _c === void 0 ? 4 : _c, style = _a.style, bubbleComponent = _a.bubbleComponent;
+    var items = _a.items, menuDistance = _a.menuDistance, height = _a.height, width = _a.width, _b = _a.bubbleRadius, bubbleRadius = _b === void 0 ? 50 : _b, _c = _a.collisionRadius, collisionRadius = _c === void 0 ? 20 : _c, _d = _a.menuRotation, menuRotation = _d === void 0 ? 4 : _d, style = _a.style, bubbleComponent = _a.bubbleComponent;
     console.log("BubbleMenu Rendered", new Date().toISOString());
     // Calculate viewport center coordinates for menu positioning
     var centerX = width / 2;
@@ -94,7 +94,7 @@ var BubbleMenu = function (_a) {
             return null;
         var dx = bubbleBPos.x - bubbleAPos.x;
         var dy = bubbleBPos.y - bubbleAPos.y;
-        var minDist = bubbleRadius * 2 + 10; // 10px buffer for visual separation
+        var minDist = bubbleRadius * 2 + collisionRadius; // Collision radius buffer for visual separation
         return {
             distanceBetweenCenters: Math.hypot(dx, dy),
             dx: dx,
@@ -410,7 +410,7 @@ var BubbleMenu = function (_a) {
         });
     }, [items, bubbleRadius, initialPositions, style === null || style === void 0 ? void 0 : style.bubble, bubbleComponent, updateBubblePosition, height, width]);
     return (React.createElement(View, { style: [styles.container, style === null || style === void 0 ? void 0 : style.container] },
-        centerBubble,
-        surroundingBubbles));
+        surroundingBubbles,
+        centerBubble));
 };
 export default React.memo(BubbleMenu);
