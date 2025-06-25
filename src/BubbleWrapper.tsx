@@ -298,7 +298,7 @@ const BubbleWrapper = forwardRef<any, BubbleWrapperProps>(({
         style={({ pressed }) => ({
           opacity: pressed ? 0.8 : 1, // Simple opacity feedback for touch
         })}
-        onPressIn={handleOnPress} // Execute bubble's onPress callback
+        onPressOut={handleOnPress} // Execute bubble's onPress callback
       >
         {/* 
           Render the actual bubble component
