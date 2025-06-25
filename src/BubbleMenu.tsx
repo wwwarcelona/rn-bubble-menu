@@ -508,8 +508,8 @@ const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius = 50, col
 
   return (
     <View style={[styles.container, style?.container]}>
-      {centerBubble}
       {surroundingBubbles}
+      {centerBubble}
     </View>
   );
 };
