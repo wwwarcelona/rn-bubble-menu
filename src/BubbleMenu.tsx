@@ -26,6 +26,7 @@ interface BubbleMenuProps {
   height: number // Container height constraint
   width: number // Container width constraint
   bubbleRadius?: number // Radius of each bubble (default: 50px)
+  collisionRadius?: number // Radius for collision detection (default: 20px)
   menuRotation?: number // Number used to rotate the bubble
   style?: BubbleMenuStyleProps // Style overrides for menu components
   bubbleComponent?: React.ComponentType<BubbleProps>; // Custom bubble component renderer
@@ -55,7 +56,7 @@ type BubbleRef = {
  * - Memory-efficient ref-based position tracking
  *
  */
-const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius = 50, menuRotation = 4, style, bubbleComponent } : BubbleMenuProps) => {
+const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius = 50, collisionRadius = 20, menuRotation = 4, style, bubbleComponent } : BubbleMenuProps) => {
   console.log("BubbleMenu Rendered", new Date().toISOString());
   
   // Calculate viewport center coordinates for menu positioning
@@ -133,7 +134,7 @@ const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius = 50, men
     
     const dx = bubbleBPos.x - bubbleAPos.x;
     const dy = bubbleBPos.y - bubbleAPos.y;
-    const minDist = bubbleRadius * 2 + 10; // 10px buffer for visual separation
+    const minDist = bubbleRadius * 2 + collisionRadius; // Collision radius buffer for visual separation
 
     return { 
       distanceBetweenCenters: Math.hypot(dx, dy), 
