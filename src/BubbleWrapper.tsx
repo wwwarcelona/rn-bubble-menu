@@ -160,6 +160,12 @@ const BubbleWrapper = forwardRef<any, BubbleWrapperProps>(({
     },
   }), [originalX, originalY, translation]);
 
+  const handleOnPress = useCallback(() => {
+    if (!isDragging) {
+      onPress();
+    }
+  }, [onPress])
+
   /**
    * Boundary Constraint System
    * Ensures bubbles remain within visible container bounds
@@ -292,7 +298,7 @@ const BubbleWrapper = forwardRef<any, BubbleWrapperProps>(({
         style={({ pressed }) => ({
           opacity: pressed ? 0.8 : 1, // Simple opacity feedback for touch
         })}
-        onPress={onPress} // Execute bubble's onPress callback
+        onPressIn={handleOnPress} // Execute bubble's onPress callback
       >
         {/* 
           Render the actual bubble component
