@@ -1,8 +1,8 @@
 import React from 'react';
 import { BubbleStyleProps } from './BubbleWrapper';
 export interface BubbleProps {
-    label: string;
-    radius?: number;
+    id: string;
+    radius: number;
     originalX?: number;
     originalY?: number;
     text?: string;

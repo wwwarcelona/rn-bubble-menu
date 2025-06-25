@@ -10,7 +10,7 @@
       "moduleResolution": "node",
       "skipLibCheck": true,
       "lib": ["ES2015", "DOM"],
-      "types": ["react-native"]
+      "types": ["react-native", "node"]
     },
     "include": ["src/**/*"]
   }
