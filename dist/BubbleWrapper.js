@@ -201,7 +201,7 @@ var BubbleWrapper = forwardRef(function (_a, ref) {
                 return ({
                     opacity: pressed ? 0.8 : 1, // Simple opacity feedback for touch
                 });
-            }, onPressIn: onPress },
+            }, onPress: onPress },
             React.createElement(BubbleComponent, __assign({}, item, { radius: radius })))));
 });
 export default React.memo(BubbleWrapper);
