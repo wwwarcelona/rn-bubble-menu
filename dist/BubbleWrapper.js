@@ -10,7 +10,7 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 import React, { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, } from 'react';
-import { Animated, PanResponder, TouchableOpacity, } from 'react-native';
+import { Animated, PanResponder, Pressable, } from 'react-native';
 import DefaultBubble from './DefaultBubble';
 import { styles } from './styles';
 import { K } from './constants';
@@ -92,6 +92,12 @@ var BubbleWrapper = forwardRef(function (_a, ref) {
             avoidCollision.current = value;
         },
     }); }, [originalX, originalY, translation]);
+    var handlePress = useCallback(function () {
+        var originalPosition = { x: originalX, y: originalY };
+        if (currentPosition.current === originalPosition) {
+            onPress();
+        }
+    }, [onPress]);
     /**
      * Boundary Constraint System
      * Ensures bubbles remain within visible container bounds
@@ -196,7 +202,12 @@ var BubbleWrapper = forwardRef(function (_a, ref) {
             },
             animatedStyle, // Apply animated transforms
         ] }, panResponder.panHandlers),
-        React.createElement(TouchableOpacity, { key: item.key, onPress: onPress },
+        React.createElement(Pressable, { key: item.key, style: function (_a) {
+                var pressed = _a.pressed;
+                return ({
+                    opacity: pressed ? 0.8 : 1, // Simple opacity feedback for touch
+                });
+            }, onPressOut: handlePress },
             React.createElement(BubbleComponent, __assign({}, item, { radius: radius })))));
 });
 export default React.memo(BubbleWrapper);
