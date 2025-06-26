@@ -94,10 +94,11 @@ var BubbleWrapper = forwardRef(function (_a, ref) {
     }); }, [originalX, originalY, translation]);
     var handlePress = useCallback(function () {
         var originalPosition = { x: originalX, y: originalY };
-        if (currentPosition.current === originalPosition) {
+        console.log("Handling press, isDragging:", isDragging);
+        if (!isDragging) {
             onPress();
         }
-    }, [onPress]);
+    }, [onPress, isDragging]);
     /**
      * Boundary Constraint System
      * Ensures bubbles remain within visible container bounds
@@ -207,7 +208,7 @@ var BubbleWrapper = forwardRef(function (_a, ref) {
                 return ({
                     opacity: pressed ? 0.8 : 1, // Simple opacity feedback for touch
                 });
-            }, onPressOut: onPress },
+            }, onPressOut: handlePress },
             React.createElement(BubbleComponent, __assign({}, item, { radius: radius })))));
 });
 export default React.memo(BubbleWrapper);
