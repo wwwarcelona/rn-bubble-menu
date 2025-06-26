@@ -161,6 +161,12 @@ const BubbleWrapper = forwardRef<any, BubbleWrapperProps>(({
     },
   }), [originalX, originalY, translation]);
 
+  const handlePress = useCallback(() => {
+    if (!isDragging.current) {
+      onPress();
+    }
+  }, [onPress])
+
   /**
    * Boundary Constraint System
    * Ensures bubbles remain within visible container bounds
@@ -288,9 +294,12 @@ const BubbleWrapper = forwardRef<any, BubbleWrapperProps>(({
         Pressable wrapper for touch feedback and press handling
         Provides visual feedback during touch interactions
       */}
-      <TouchableOpacity
+      <Pressable
         key={item.key}
-        onPress={onPress} // Execute bubble's onPress callback
+        style={({ pressed }) => ({
+          opacity: pressed ? 0.8 : 1, // Simple opacity feedback for touch
+        })}
+        onPressOut={handlePress} // Execute bubble's onPress callback
       >
         {/* 
           Render the actual bubble component
@@ -300,7 +309,7 @@ const BubbleWrapper = forwardRef<any, BubbleWrapperProps>(({
             {...item}
             radius={radius}
         />
-      </TouchableOpacity>
+      </Pressable>
     </Animated.View>
   );
 });
