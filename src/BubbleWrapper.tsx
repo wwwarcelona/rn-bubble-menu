@@ -162,8 +162,6 @@ const BubbleWrapper = forwardRef<any, BubbleWrapperProps>(({
   }), [originalX, originalY, translation]);
 
   const handlePress = useCallback(() => {
-    const originalPosition: Position = { x: originalX!, y: originalY!};
-    console.log("Handling press, isDragging:", isDragging.current)
     if (!isDragging.current) {
       onPress();
     }
