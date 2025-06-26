@@ -94,11 +94,11 @@ var BubbleWrapper = forwardRef(function (_a, ref) {
     }); }, [originalX, originalY, translation]);
     var handlePress = useCallback(function () {
         var originalPosition = { x: originalX, y: originalY };
-        console.log("Handling press, isDragging:", isDragging);
-        if (!isDragging) {
+        console.log("Handling press, isDragging:", isDragging.current);
+        if (!isDragging.current) {
             onPress();
         }
-    }, [onPress, isDragging]);
+    }, [onPress]);
     /**
      * Boundary Constraint System
      * Ensures bubbles remain within visible container bounds
