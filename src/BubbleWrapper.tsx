@@ -163,11 +163,11 @@ const BubbleWrapper = forwardRef<any, BubbleWrapperProps>(({
 
   const handlePress = useCallback(() => {
     const originalPosition: Position = { x: originalX!, y: originalY!};
-    console.log("Handling press, isDragging:", isDragging)
-    if (!isDragging) {
+    console.log("Handling press, isDragging:", isDragging.current)
+    if (!isDragging.current) {
       onPress();
     }
-  }, [onPress, isDragging])
+  }, [onPress])
 
   /**
    * Boundary Constraint System
