@@ -93,8 +93,6 @@ var BubbleWrapper = forwardRef(function (_a, ref) {
         },
     }); }, [originalX, originalY, translation]);
     var handlePress = useCallback(function () {
-        var originalPosition = { x: originalX, y: originalY };
-        console.log("Handling press, isDragging:", isDragging.current);
         if (!isDragging.current) {
             onPress();
         }
