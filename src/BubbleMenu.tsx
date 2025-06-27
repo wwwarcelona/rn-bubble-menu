@@ -365,7 +365,7 @@ const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius = 50, col
       
       const positionDifference = positionDifferencesRef.current[item.id];
 
-      bubble.setPosition(positionDifference);
+      bubble.setPosition({ x: UIPos.x + positionDifference.x, y: UIPos.y + positionDifference.y });
       
       // if (positionDifference && (Math.abs(positionDifference.x) > 0.1 || Math.abs(positionDifference.y) > 0.1)) {
       //   // Interpolate towards target position
