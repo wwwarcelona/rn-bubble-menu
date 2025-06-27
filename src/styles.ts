@@ -4,11 +4,10 @@ export const styles = StyleSheet.create({
   // App styles
   container: {
     display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
     backgroundColor: 'transparent',
     height: '100%',
     width: '100%',
+    position: 'relative'
   },
 
   // Bubble styles

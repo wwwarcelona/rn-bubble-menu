@@ -10,10 +10,10 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 import React, { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, } from 'react';
-import { Animated, PanResponder, Pressable, } from 'react-native';
+import { Animated, PanResponder, Pressable } from 'react-native';
+import { K } from './constants';
 import DefaultBubble from './DefaultBubble';
 import { styles } from './styles';
-import { K } from './constants';
 /**
  * BubbleWrapper Component
  *
@@ -39,8 +39,10 @@ var BubbleWrapper = forwardRef(function (_a, ref) {
      * Animation and State Management
      * Using refs to maintain state without triggering re-renders during animations
      */
-    // Native-driven animated value for smooth GPU-accelerated transforms
-    var translation = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
+    // Animated value for smooth GPU-accelerated transforms
+    var translation = useRef(new Animated.ValueXY({ x: originalX, y: originalY })).current;
+    // Sets if the animations use Nativ Drivers or not.
+    var nativeDriverUsage = true;
     // Current logical position - tracks where the bubble actually is
     var currentPosition = useRef({ x: originalX, y: originalY });
     // Drag state tracking - prevents external position updates during user interaction
@@ -49,8 +51,10 @@ var BubbleWrapper = forwardRef(function (_a, ref) {
     var avoidCollision = useRef(false);
     // Throttling mechanism to prevent excessive parent updates during drag
     var lastLogicUpdateRef = useRef(0);
+    var lastUIUpdateRef = useRef(0);
     // Calculate throttling interval based on logic frame rate
     var LOGIC_FRAME_INTERVAL = 1000 / K.FPS_LOGIC;
+    var UI_FRAME_INTERVAL = 1000 / K.FPS_UI;
     /**
      * Imperative API for Parent Component Communication
      * Provides external control over bubble position and state without prop drilling
@@ -71,8 +75,8 @@ var BubbleWrapper = forwardRef(function (_a, ref) {
             if (!isDragging.current) {
                 // Animate to new position using native driver for performance
                 Animated.timing(translation, {
-                    toValue: { x: pos.x - originalX, y: pos.y - originalY },
-                    useNativeDriver: true,
+                    toValue: { x: pos.x, y: pos.y },
+                    useNativeDriver: nativeDriverUsage,
                     duration: 1000 / 20, // Sync with UI update rate
                 }).start();
                 currentPosition.current = { x: pos.x, y: pos.y };
@@ -93,7 +97,7 @@ var BubbleWrapper = forwardRef(function (_a, ref) {
         },
     }); }, [originalX, originalY, translation]);
     var handlePress = useCallback(function () {
-        if (!isDragging.current) {
+        if (!isDragging.current && onPress) {
             onPress();
         }
     }, [onPress]);
@@ -143,14 +147,19 @@ var BubbleWrapper = forwardRef(function (_a, ref) {
                 var clampedPosition = clampPosition(targetX, targetY);
                 // Update logical position for collision detection system
                 currentPosition.current = clampedPosition;
-                // Update visual position - calculate delta from original position
-                // This maintains consistency between logical and visual positioning
-                var deltaX = clampedPosition.x - originalX;
-                var deltaY = clampedPosition.y - originalY;
-                translation.setValue({ x: deltaX, y: deltaY });
+                var now = Date.now();
+                // Throttled drag update
+                // Only update at UI frame rate to avoid overwhelming the system
+                if (now - lastUIUpdateRef.current >= UI_FRAME_INTERVAL) {
+                    Animated.timing(translation, {
+                        toValue: { x: clampedPosition.x, y: clampedPosition.y },
+                        useNativeDriver: nativeDriverUsage,
+                        duration: 1000 / K.FPS_UI, // Sync with UI update rate
+                    }).start();
+                    lastUIUpdateRef.current = now;
+                }
                 // Throttled parent notification to prevent performance degradation
                 // Only update parent at logic frame rate to avoid overwhelming the system
-                var now = Date.now();
                 if (now - lastLogicUpdateRef.current >= LOGIC_FRAME_INTERVAL) {
                     updateBubblePositions(id, currentPosition.current);
                     lastLogicUpdateRef.current = now;
@@ -163,10 +172,9 @@ var BubbleWrapper = forwardRef(function (_a, ref) {
             onPanResponderRelease: function () {
                 isDragging.current = false;
                 // Animate back to original position using spring physics
-                // Native driver ensures 60fps performance on the animation thread
                 Animated.spring(translation, {
-                    toValue: { x: 0, y: 0 },
-                    useNativeDriver: false,
+                    toValue: { x: originalX, y: originalY },
+                    useNativeDriver: nativeDriverUsage,
                     // Spring configuration can be customized here for feel
                 }).start();
                 // Reset logical position and notify parent immediately
@@ -189,17 +197,7 @@ var BubbleWrapper = forwardRef(function (_a, ref) {
     return (React.createElement(Animated.View, __assign({ style: [
             styles.bubbleContainer,
             (_b = item.style) === null || _b === void 0 ? void 0 : _b.container,
-            {
-                // Position at original coordinates - animations are applied as transforms
-                left: originalX,
-                top: originalY,
-                // Explicit transform declaration for clarity (also included in animatedStyle)
-                transform: [
-                    { translateX: translation.x },
-                    { translateY: translation.y }
-                ]
-            },
-            animatedStyle, // Apply animated transforms
+            animatedStyle,
         ] }, panResponder.panHandlers),
         React.createElement(Pressable, { key: item.key, style: function (_a) {
                 var pressed = _a.pressed;
