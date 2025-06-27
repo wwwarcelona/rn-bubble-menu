@@ -1,11 +1,10 @@
 export declare const styles: {
     container: {
         display: "flex";
-        justifyContent: "center";
-        alignItems: "center";
         backgroundColor: string;
         height: "100%";
         width: "100%";
+        position: "relative";
     };
     bubbleContainer: {
         position: "absolute";

@@ -11,12 +11,11 @@ import {
   PanResponder,
   Pressable,
   TextStyle,
-  TouchableOpacity,
-  ViewStyle,
+  ViewStyle
 } from 'react-native';
+import { K } from './constants';
 import DefaultBubble from './DefaultBubble';
 import { styles } from './styles';
-import { K } from './constants';
 
 /**
  * Style configuration for individual bubble components
@@ -98,8 +97,11 @@ const BubbleWrapper = forwardRef<any, BubbleWrapperProps>(({
    * Using refs to maintain state without triggering re-renders during animations
    */
   
-  // Native-driven animated value for smooth GPU-accelerated transforms
-  const translation = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
+  // Animated value for smooth GPU-accelerated transforms
+  const translation = useRef(new Animated.ValueXY({ x: originalX, y: originalY })).current;
+
+  // Sets if the animations use Nativ Drivers or not.
+  const nativeDriverUsage = true;
   
   // Current logical position - tracks where the bubble actually is
   const currentPosition = useRef<Position>({ x: originalX, y: originalY });
@@ -112,9 +114,11 @@ const BubbleWrapper = forwardRef<any, BubbleWrapperProps>(({
   
   // Throttling mechanism to prevent excessive parent updates during drag
   const lastLogicUpdateRef = useRef(0);
+  const lastUIUpdateRef = useRef(0);
 
   // Calculate throttling interval based on logic frame rate
   const LOGIC_FRAME_INTERVAL = 1000 / K.FPS_LOGIC;
+  const UI_FRAME_INTERVAL = 1000 / K.FPS_UI;
 
   /**
    * Imperative API for Parent Component Communication
@@ -137,9 +141,9 @@ const BubbleWrapper = forwardRef<any, BubbleWrapperProps>(({
       if (!isDragging.current) {
         // Animate to new position using native driver for performance
         Animated.timing(translation, {
-          toValue: { x: pos.x - originalX, y: pos.y - originalY },
-          useNativeDriver: true,
-          duration: 1000 / (K.FPS_UI * K.FPS_SYNC), // Sync with UI update rate
+          toValue: { x: pos.x, y: pos.y},
+          useNativeDriver: nativeDriverUsage,
+          duration: 1000 / 20, // Sync with UI update rate
         }).start();
         currentPosition.current = { x: pos.x, y: pos.y };
       }
@@ -162,7 +166,7 @@ const BubbleWrapper = forwardRef<any, BubbleWrapperProps>(({
   }), [originalX, originalY, translation]);
 
   const handlePress = useCallback(() => {
-    if (!isDragging.current) {
+    if (!isDragging.current && onPress) {
       onPress();
     }
   }, [onPress])
@@ -219,16 +223,22 @@ const BubbleWrapper = forwardRef<any, BubbleWrapperProps>(({
           
           // Update logical position for collision detection system
           currentPosition.current = clampedPosition;
-          
-          // Update visual position - calculate delta from original position
-          // This maintains consistency between logical and visual positioning
-          const deltaX = clampedPosition.x - originalX;
-          const deltaY = clampedPosition.y - originalY;
-          translation.setValue({ x: deltaX, y: deltaY });
+
+          const now = Date.now();
+
+          // Throttled drag update
+          // Only update at UI frame rate to avoid overwhelming the system
+          if (now - lastUIUpdateRef.current >= UI_FRAME_INTERVAL) {
+            Animated.timing(translation, {
+              toValue: { x: clampedPosition.x, y: clampedPosition.y},
+              useNativeDriver: nativeDriverUsage,
+              duration: 1000 / K.FPS_UI, // Sync with UI update rate
+            }).start();
+            lastUIUpdateRef.current = now;
+          }
 
           // Throttled parent notification to prevent performance degradation
           // Only update parent at logic frame rate to avoid overwhelming the system
-          const now = Date.now();
           if (now - lastLogicUpdateRef.current >= LOGIC_FRAME_INTERVAL) {
             updateBubblePositions(id, currentPosition.current);
             lastLogicUpdateRef.current = now;
@@ -243,10 +253,9 @@ const BubbleWrapper = forwardRef<any, BubbleWrapperProps>(({
           isDragging.current = false;
 
           // Animate back to original position using spring physics
-          // Native driver ensures 60fps performance on the animation thread
           Animated.spring(translation, {
-            toValue: { x: 0, y: 0 }, // Return to zero delta (original position)
-            useNativeDriver: true,
+            toValue: { x: originalX, y: originalY }, // Return to zero delta (original position)
+            useNativeDriver: nativeDriverUsage,
             // Spring configuration can be customized here for feel
           }).start();
           
@@ -272,45 +281,35 @@ const BubbleWrapper = forwardRef<any, BubbleWrapperProps>(({
   };
 
   return (
-    <Animated.View
-      style={[
-        styles.bubbleContainer,
-        item.style?.container,
-        {
-          // Position at original coordinates - animations are applied as transforms
-          left: originalX,
-          top: originalY,
-          // Explicit transform declaration for clarity (also included in animatedStyle)
-          transform: [
-            { translateX: translation.x },
-            { translateY: translation.y }
-          ]
-        },
-        animatedStyle, // Apply animated transforms
-      ]}
-      {...panResponder.panHandlers} // Attach gesture handling
-    >
-      {/* 
-        Pressable wrapper for touch feedback and press handling
-        Provides visual feedback during touch interactions
-      */}
-      <Pressable
-        key={item.key}
-        style={({ pressed }) => ({
-          opacity: pressed ? 0.8 : 1, // Simple opacity feedback for touch
-        })}
-        onPressOut={handlePress} // Execute bubble's onPress callback
+      <Animated.View
+        style={[
+          styles.bubbleContainer,
+          item.style?.container,
+          animatedStyle,
+        ]}
+        {...panResponder.panHandlers}
       >
         {/* 
-          Render the actual bubble component
-          Can be customized via bubbleComponent prop or defaults to DefaultBubble
+          Pressable wrapper for touch feedback and press handling
+          Provides visual feedback during touch interactions
         */}
-        <BubbleComponent
-            {...item}
-            radius={radius}
-        />
-      </Pressable>
-    </Animated.View>
+        <Pressable
+          key={item.key}
+          style={({ pressed }) => ({
+            opacity: pressed ? 0.8 : 1, // Simple opacity feedback for touch
+          })}
+          onPressOut={handlePress} // Execute bubble's onPress callback
+        >
+          {/* 
+            Render the actual bubble component
+            Can be customized via bubbleComponent prop or defaults to DefaultBubble
+          */}
+          <BubbleComponent
+              {...item}
+              radius={radius}
+          />
+        </Pressable>
+      </Animated.View>
   );
 });
 

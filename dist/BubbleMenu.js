@@ -9,11 +9,11 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-import React, { useEffect, useMemo, useRef, useCallback } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { View } from 'react-native';
 import BubbleWrapper from './BubbleWrapper';
-import { styles } from './styles';
 import { K } from './constants';
+import { styles } from './styles';
 /**
  * BubbleMenu Component
  *
@@ -74,6 +74,7 @@ var BubbleMenu = function (_a) {
     // Initialize position tracking on mount - only runs once to prevent layout shifts
     useEffect(function () {
         bubblePositionsRef.current = __assign({}, initialPositions);
+        console.log("Bubble Positions: ", bubblePositionsRef.current);
     }, [initialPositions]);
     /**
      * Updates bubble position in memory without triggering re-renders
@@ -296,50 +297,27 @@ var BubbleMenu = function (_a) {
             var bubble = bubbleRefs.current[item.id];
             if (!bubble)
                 continue;
-            var UIPos = bubble.getPosition(); // Current visual position
             var logicPos = bubblePositionsRef.current[item.id]; // Target logical position
             if (!logicPos)
                 continue;
-            // Calculate position difference on first sync cycle
-            if (UISyncRef.current === 1) {
-                positionDifferencesRef.current[item.id] = {
-                    x: logicPos.x - UIPos.x,
-                    y: logicPos.y - UIPos.y
-                };
-            }
-            var positionDifference = positionDifferencesRef.current[item.id];
-            if (positionDifference && (Math.abs(positionDifference.x) > 0.1 || Math.abs(positionDifference.y) > 0.1)) {
-                // Interpolate towards target position
-                var stepSize = 1 / K.FPS_SYNC;
-                var step = {
-                    x: positionDifference.x * stepSize,
-                    y: positionDifference.y * stepSize
-                };
-                var newPos = {
-                    x: UIPos.x + step.x,
-                    y: UIPos.y + step.y
-                };
-                bubble.setPosition(newPos);
-                hasUIUpdates = true;
+            if (!bubble.getIsDragging()) {
+                bubble.setPosition(logicPos); // Set position triggers an animation that uses native threads and is 60 fps.
             }
         }
         return hasUIUpdates;
     }, [items]);
     /**
-     * Dual-Loop Animation Architecture
-     * Separates physics logic from UI updates for optimal performance
-     *
-     * Logic Loop (K.FPS_LOGIC): Handles collision detection and position calculations
-     * UI Loop (K.FPS_UI): Handles smooth visual updates and interpolation
+     * Loop Animation Architecture
+     * Has physics logic and UI updates with optimal performance
      */
     useEffect(function () {
-        var logicTimeoutId;
-        var uiTimeoutId;
+        var timeoutId;
         /**
-         * Physics and Logic Loop
+         * UI, Physics and Logic Loop
          * Processes collision detection, resolution, and position updates
+         * Updates the UI
          */
-        var runLogicLoop = function () {
+        var runLoop = function () {
             var _a = isAnyBubbleOutOfPosition(), result = _a.result, array = _a.array;
             var ignoreCollisions = true;
             if (result) {
@@ -358,28 +336,17 @@ var BubbleMenu = function (_a) {
                         }
                     }
                 }
+                updateUI();
                 moveBubblesBackToInitialPositions(ignoreCollisions);
             }
-            logicTimeoutId = setTimeout(runLogicLoop, 1000 / K.FPS_LOGIC);
+            timeoutId = setTimeout(runLoop, 1000 / K.FPS_LOGIC);
         };
-        /**
-         * UI Update Loop
-         * Handles smooth visual interpolation and rendering
-         */
-        var runUILoop = function () {
-            if (isAnyBubbleOutOfPosition().result) {
-                updateUI();
-                UISyncRef.current = (UISyncRef.current % 3) + 1;
-            }
-            uiTimeoutId = setTimeout(runUILoop, 1000 / K.FPS_UI);
-        };
-        // Start both loops
-        logicTimeoutId = setTimeout(runLogicLoop, 1000 / K.FPS_LOGIC);
-        uiTimeoutId = setTimeout(runUILoop, 1000 / K.FPS_UI);
+        // Start loop
+        timeoutId = setTimeout(runLoop, 1000 / K.FPS_LOGIC);
         // Cleanup on component unmount
         return function () {
-            clearTimeout(logicTimeoutId);
-            clearTimeout(uiTimeoutId);
+            clearTimeout(timeoutId);
+            // clearTimeout(uiTimeoutId);
             if (animationFrameRef.current) {
                 cancelAnimationFrame(animationFrameRef.current);
             }
