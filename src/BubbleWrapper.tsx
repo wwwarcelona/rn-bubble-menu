@@ -17,6 +17,7 @@ import {
 import DefaultBubble from './DefaultBubble';
 import { styles } from './styles';
 import { K } from './constants';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 /**
  * Style configuration for individual bubble components
@@ -272,45 +273,47 @@ const BubbleWrapper = forwardRef<any, BubbleWrapperProps>(({
   };
 
   return (
-    <Animated.View
-      style={[
-        styles.bubbleContainer,
-        item.style?.container,
-        {
-          // Position at original coordinates - animations are applied as transforms
-          left: originalX,
-          top: originalY,
-          // Explicit transform declaration for clarity (also included in animatedStyle)
-          transform: [
-            { translateX: translation.x },
-            { translateY: translation.y }
-          ]
-        },
-        animatedStyle, // Apply animated transforms
-      ]}
-      {...panResponder.panHandlers} // Attach gesture handling
-    >
-      {/* 
-        Pressable wrapper for touch feedback and press handling
-        Provides visual feedback during touch interactions
-      */}
-      <Pressable
-        key={item.key}
-        style={({ pressed }) => ({
-          opacity: pressed ? 0.8 : 1, // Simple opacity feedback for touch
-        })}
-        onPressOut={handlePress} // Execute bubble's onPress callback
+    <GestureHandlerRootView>
+      <Animated.View
+        style={[
+          styles.bubbleContainer,
+          item.style?.container,
+          {
+            // Position at original coordinates - animations are applied as transforms
+            left: originalX,
+            top: originalY,
+            // Explicit transform declaration for clarity (also included in animatedStyle)
+            transform: [
+              { translateX: translation.x },
+              { translateY: translation.y }
+            ]
+          },
+          animatedStyle, // Apply animated transforms
+        ]}
+        {...panResponder.panHandlers} // Attach gesture handling
       >
         {/* 
-          Render the actual bubble component
-          Can be customized via bubbleComponent prop or defaults to DefaultBubble
+          Pressable wrapper for touch feedback and press handling
+          Provides visual feedback during touch interactions
         */}
-        <BubbleComponent
-            {...item}
-            radius={radius}
-        />
-      </Pressable>
-    </Animated.View>
+        <Pressable
+          key={item.key}
+          style={({ pressed }) => ({
+            opacity: pressed ? 0.8 : 1, // Simple opacity feedback for touch
+          })}
+          onPressOut={handlePress} // Execute bubble's onPress callback
+        >
+          {/* 
+            Render the actual bubble component
+            Can be customized via bubbleComponent prop or defaults to DefaultBubble
+          */}
+          <BubbleComponent
+              {...item}
+              radius={radius}
+          />
+        </Pressable>
+      </Animated.View>
+    </GestureHandlerRootView>
   );
 });
 

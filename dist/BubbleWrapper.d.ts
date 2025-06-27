@@ -44,5 +44,5 @@ export interface Position {
     x: number;
     y: number;
 }
-declare const _default: React.NamedExoticComponent<BubbleWrapperProps & React.RefAttributes<any>>;
+declare const _default: React.MemoExoticComponent<React.ForwardRefExoticComponent<BubbleWrapperProps & React.RefAttributes<any>>>;
 export default _default;
