@@ -139,7 +139,7 @@ const BubbleWrapper = forwardRef<any, BubbleWrapperProps>(({
         // Animate to new position using native driver for performance
         Animated.timing(translation, {
           toValue: { x: pos.x - originalX, y: pos.y - originalY },
-          useNativeDriver: true,
+          useNativeDriver: false,
           duration: 1000 / (K.FPS_UI * K.FPS_SYNC), // Sync with UI update rate
         }).start();
         currentPosition.current = { x: pos.x, y: pos.y };
@@ -247,7 +247,7 @@ const BubbleWrapper = forwardRef<any, BubbleWrapperProps>(({
           // Native driver ensures 60fps performance on the animation thread
           Animated.spring(translation, {
             toValue: { x: 0, y: 0 }, // Return to zero delta (original position)
-            useNativeDriver: true,
+            useNativeDriver: false,
             // Spring configuration can be customized here for feel
           }).start();
           
@@ -273,7 +273,6 @@ const BubbleWrapper = forwardRef<any, BubbleWrapperProps>(({
   };
 
   return (
-    <GestureHandlerRootView>
       <Animated.View
         style={[
           styles.bubbleContainer,
@@ -313,7 +312,6 @@ const BubbleWrapper = forwardRef<any, BubbleWrapperProps>(({
           />
         </Pressable>
       </Animated.View>
-    </GestureHandlerRootView>
   );
 });
 

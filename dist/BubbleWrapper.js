@@ -14,7 +14,6 @@ import { Animated, PanResponder, Pressable, } from 'react-native';
 import DefaultBubble from './DefaultBubble';
 import { styles } from './styles';
 import { K } from './constants';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 /**
  * BubbleWrapper Component
  *
@@ -73,7 +72,7 @@ var BubbleWrapper = forwardRef(function (_a, ref) {
                 // Animate to new position using native driver for performance
                 Animated.timing(translation, {
                     toValue: { x: pos.x - originalX, y: pos.y - originalY },
-                    useNativeDriver: true,
+                    useNativeDriver: false,
                     duration: 1000 / (K.FPS_UI * K.FPS_SYNC), // Sync with UI update rate
                 }).start();
                 currentPosition.current = { x: pos.x, y: pos.y };
@@ -167,7 +166,7 @@ var BubbleWrapper = forwardRef(function (_a, ref) {
                 // Native driver ensures 60fps performance on the animation thread
                 Animated.spring(translation, {
                     toValue: { x: 0, y: 0 },
-                    useNativeDriver: true,
+                    useNativeDriver: false,
                     // Spring configuration can be customized here for feel
                 }).start();
                 // Reset logical position and notify parent immediately
@@ -187,28 +186,27 @@ var BubbleWrapper = forwardRef(function (_a, ref) {
     var animatedStyle = {
         transform: translation.getTranslateTransform(),
     };
-    return (React.createElement(GestureHandlerRootView, null,
-        React.createElement(Animated.View, __assign({ style: [
-                styles.bubbleContainer,
-                (_b = item.style) === null || _b === void 0 ? void 0 : _b.container,
-                {
-                    // Position at original coordinates - animations are applied as transforms
-                    left: originalX,
-                    top: originalY,
-                    // Explicit transform declaration for clarity (also included in animatedStyle)
-                    transform: [
-                        { translateX: translation.x },
-                        { translateY: translation.y }
-                    ]
-                },
-                animatedStyle, // Apply animated transforms
-            ] }, panResponder.panHandlers),
-            React.createElement(Pressable, { key: item.key, style: function (_a) {
-                    var pressed = _a.pressed;
-                    return ({
-                        opacity: pressed ? 0.8 : 1, // Simple opacity feedback for touch
-                    });
-                }, onPressOut: handlePress },
-                React.createElement(BubbleComponent, __assign({}, item, { radius: radius }))))));
+    return (React.createElement(Animated.View, __assign({ style: [
+            styles.bubbleContainer,
+            (_b = item.style) === null || _b === void 0 ? void 0 : _b.container,
+            {
+                // Position at original coordinates - animations are applied as transforms
+                left: originalX,
+                top: originalY,
+                // Explicit transform declaration for clarity (also included in animatedStyle)
+                transform: [
+                    { translateX: translation.x },
+                    { translateY: translation.y }
+                ]
+            },
+            animatedStyle, // Apply animated transforms
+        ] }, panResponder.panHandlers),
+        React.createElement(Pressable, { key: item.key, style: function (_a) {
+                var pressed = _a.pressed;
+                return ({
+                    opacity: pressed ? 0.8 : 1, // Simple opacity feedback for touch
+                });
+            }, onPressOut: handlePress },
+            React.createElement(BubbleComponent, __assign({}, item, { radius: radius })))));
 });
 export default React.memo(BubbleWrapper);

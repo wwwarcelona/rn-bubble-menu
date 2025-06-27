@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useMemo, useRef, useCallback } from 'react';
 import { View, ViewStyle } from 'react-native';
 import type { BubbleProps, BubbleStyleProps, Position } from './BubbleWrapper';
 import BubbleWrapper from './BubbleWrapper';
