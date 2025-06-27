@@ -17,7 +17,6 @@ import {
 import DefaultBubble from './DefaultBubble';
 import { styles } from './styles';
 import { K } from './constants';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 /**
  * Style configuration for individual bubble components
@@ -139,8 +138,8 @@ const BubbleWrapper = forwardRef<any, BubbleWrapperProps>(({
         // Animate to new position using native driver for performance
         Animated.timing(translation, {
           toValue: { x: pos.x - originalX, y: pos.y - originalY },
-          useNativeDriver: false,
-          duration: 1000 / (K.FPS_UI * K.FPS_SYNC), // Sync with UI update rate
+          useNativeDriver: true,
+          duration: 1000 / 20, // Sync with UI update rate
         }).start();
         currentPosition.current = { x: pos.x, y: pos.y };
       }

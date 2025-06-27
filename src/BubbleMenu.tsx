@@ -364,22 +364,25 @@ const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius = 50, col
       }
       
       const positionDifference = positionDifferencesRef.current[item.id];
-      if (positionDifference && (Math.abs(positionDifference.x) > 0.1 || Math.abs(positionDifference.y) > 0.1)) {
-        // Interpolate towards target position
-        const stepSize = 1 / K.FPS_SYNC;
-        const step = {
-          x: positionDifference.x * stepSize,
-          y: positionDifference.y * stepSize
-        };
+
+      bubble.setPosition(positionDifference);
+      
+      // if (positionDifference && (Math.abs(positionDifference.x) > 0.1 || Math.abs(positionDifference.y) > 0.1)) {
+      //   // Interpolate towards target position
+      //   const stepSize = 1 / K.FPS_SYNC;
+      //   const step = {
+      //     x: positionDifference.x * stepSize,
+      //     y: positionDifference.y * stepSize
+      //   };
         
-        const newPos = {
-          x: UIPos.x + step.x,
-          y: UIPos.y + step.y
-        };
+      //   const newPos = {
+      //     x: UIPos.x + step.x,
+      //     y: UIPos.y + step.y
+      //   };
         
-        bubble.setPosition(newPos);
-        hasUIUpdates = true;
-      }
+      //   bubble.setPosition(newPos);
+      //   hasUIUpdates = true;
+      // }
     }
     
     return hasUIUpdates;
@@ -394,7 +397,7 @@ const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius = 50, col
    */
   useEffect(() => {
     let logicTimeoutId: NodeJS.Timeout;
-    let uiTimeoutId: NodeJS.Timeout;
+    // let uiTimeoutId: NodeJS.Timeout;
     
     /**
      * Physics and Logic Loop
@@ -420,6 +423,7 @@ const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius = 50, col
             }
           }
         } 
+        updateUI();
         moveBubblesBackToInitialPositions(ignoreCollisions);        
       }
       
@@ -430,23 +434,23 @@ const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius = 50, col
      * UI Update Loop
      * Handles smooth visual interpolation and rendering
      */
-    const runUILoop = () => {
-      if (isAnyBubbleOutOfPosition().result) {
-        updateUI();
-        UISyncRef.current = (UISyncRef.current % 3) + 1;
-      }
+    // const runUILoop = () => {
+    //   if (isAnyBubbleOutOfPosition().result) {
+    //     updateUI();
+    //     UISyncRef.current = (UISyncRef.current % 3) + 1;
+    //   }
       
-      uiTimeoutId = setTimeout(runUILoop, 1000 / K.FPS_UI);
-    };
+    //   uiTimeoutId = setTimeout(runUILoop, 1000 / K.FPS_UI);
+    // };
     
     // Start both loops
     logicTimeoutId = setTimeout(runLogicLoop, 1000 / K.FPS_LOGIC);
-    uiTimeoutId = setTimeout(runUILoop, 1000 / K.FPS_UI);
+    // uiTimeoutId = setTimeout(runUILoop, 1000 / K.FPS_UI);
     
     // Cleanup on component unmount
     return () => {
       clearTimeout(logicTimeoutId);
-      clearTimeout(uiTimeoutId);
+      // clearTimeout(uiTimeoutId);
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }

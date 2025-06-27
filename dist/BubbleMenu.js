@@ -308,20 +308,21 @@ var BubbleMenu = function (_a) {
                 };
             }
             var positionDifference = positionDifferencesRef.current[item.id];
-            if (positionDifference && (Math.abs(positionDifference.x) > 0.1 || Math.abs(positionDifference.y) > 0.1)) {
-                // Interpolate towards target position
-                var stepSize = 1 / K.FPS_SYNC;
-                var step = {
-                    x: positionDifference.x * stepSize,
-                    y: positionDifference.y * stepSize
-                };
-                var newPos = {
-                    x: UIPos.x + step.x,
-                    y: UIPos.y + step.y
-                };
-                bubble.setPosition(newPos);
-                hasUIUpdates = true;
-            }
+            bubble.setPosition(positionDifference);
+            // if (positionDifference && (Math.abs(positionDifference.x) > 0.1 || Math.abs(positionDifference.y) > 0.1)) {
+            //   // Interpolate towards target position
+            //   const stepSize = 1 / K.FPS_SYNC;
+            //   const step = {
+            //     x: positionDifference.x * stepSize,
+            //     y: positionDifference.y * stepSize
+            //   };
+            //   const newPos = {
+            //     x: UIPos.x + step.x,
+            //     y: UIPos.y + step.y
+            //   };
+            //   bubble.setPosition(newPos);
+            //   hasUIUpdates = true;
+            // }
         }
         return hasUIUpdates;
     }, [items]);
@@ -334,7 +335,7 @@ var BubbleMenu = function (_a) {
      */
     useEffect(function () {
         var logicTimeoutId;
-        var uiTimeoutId;
+        // let uiTimeoutId: NodeJS.Timeout;
         /**
          * Physics and Logic Loop
          * Processes collision detection, resolution, and position updates
@@ -358,6 +359,7 @@ var BubbleMenu = function (_a) {
                         }
                     }
                 }
+                updateUI();
                 moveBubblesBackToInitialPositions(ignoreCollisions);
             }
             logicTimeoutId = setTimeout(runLogicLoop, 1000 / K.FPS_LOGIC);
@@ -366,20 +368,20 @@ var BubbleMenu = function (_a) {
          * UI Update Loop
          * Handles smooth visual interpolation and rendering
          */
-        var runUILoop = function () {
-            if (isAnyBubbleOutOfPosition().result) {
-                updateUI();
-                UISyncRef.current = (UISyncRef.current % 3) + 1;
-            }
-            uiTimeoutId = setTimeout(runUILoop, 1000 / K.FPS_UI);
-        };
+        // const runUILoop = () => {
+        //   if (isAnyBubbleOutOfPosition().result) {
+        //     updateUI();
+        //     UISyncRef.current = (UISyncRef.current % 3) + 1;
+        //   }
+        //   uiTimeoutId = setTimeout(runUILoop, 1000 / K.FPS_UI);
+        // };
         // Start both loops
         logicTimeoutId = setTimeout(runLogicLoop, 1000 / K.FPS_LOGIC);
-        uiTimeoutId = setTimeout(runUILoop, 1000 / K.FPS_UI);
+        // uiTimeoutId = setTimeout(runUILoop, 1000 / K.FPS_UI);
         // Cleanup on component unmount
         return function () {
             clearTimeout(logicTimeoutId);
-            clearTimeout(uiTimeoutId);
+            // clearTimeout(uiTimeoutId);
             if (animationFrameRef.current) {
                 cancelAnimationFrame(animationFrameRef.current);
             }
