@@ -27,7 +27,7 @@ import { styles } from './styles';
  *
  */
 var BubbleMenu = function (_a) {
-    var items = _a.items, menuDistance = _a.menuDistance, height = _a.height, width = _a.width, _b = _a.bubbleRadius, bubbleRadius = _b === void 0 ? 50 : _b, _c = _a.collisionRadius, collisionRadius = _c === void 0 ? 20 : _c, _d = _a.menuRotation, menuRotation = _d === void 0 ? 4 : _d, _e = _a.bubbleFreedom, bubbleFreedom = _e === void 0 ? true : _e, style = _a.style, bubbleComponent = _a.bubbleComponent;
+    var items = _a.items, menuDistance = _a.menuDistance, height = _a.height, width = _a.width, _b = _a.bubbleRadius, bubbleRadius = _b === void 0 ? 50 : _b, _c = _a.collisionRadius, collisionRadius = _c === void 0 ? 0 : _c, _d = _a.menuRotation, menuRotation = _d === void 0 ? 4 : _d, _e = _a.bubbleFreedom, bubbleFreedom = _e === void 0 ? true : _e, style = _a.style, bubbleComponent = _a.bubbleComponent;
     // Calculate viewport center coordinates for menu positioning
     var centerX = width / 2;
     var centerY = height / 2;
