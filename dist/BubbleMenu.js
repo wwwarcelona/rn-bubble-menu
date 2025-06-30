@@ -10,7 +10,7 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import BubbleWrapper from './BubbleWrapper';
 import { K } from './constants';
 import { styles } from './styles';
@@ -311,46 +311,49 @@ var BubbleMenu = function (_a) {
      * Has physics logic and UI updates with optimal performance
      */
     useEffect(function () {
-        var timeoutId;
-        /**
-         * UI, Physics and Logic Loop
-         * Processes collision detection, resolution, and position updates
-         * Updates the UI
-         */
-        var runLoop = function () {
-            var _a = isAnyBubbleOutOfPosition(), result = _a.result, array = _a.array;
-            var ignoreCollisions = true;
-            if (result) {
-                if (isAnyBubbleDragging()) {
-                    ignoreCollisions = false;
-                    // Process collisions for displaced bubbles
-                    for (var i = 0; i < array.length; i++) {
-                        var previouslyChecked = new Set(array.slice(0, i));
-                        for (var _i = 0, items_5 = items; _i < items_5.length; _i++) {
-                            var item = items_5[_i];
-                            if (array[i] === item.id || previouslyChecked.has(item.id))
-                                continue;
-                            if (checkCollision(array[i], item.id).isColliding) {
-                                handleCollision(array[i], item.id);
+        // Below Android 10 collisions are disabled
+        if (Platform.OS === 'ios' || (Platform.OS === 'android' && Platform.Version > 28)) {
+            var timeoutId_1;
+            /**
+             * UI, Physics and Logic Loop
+             * Processes collision detection, resolution, and position updates
+             * Updates the UI
+             */
+            var runLoop_1 = function () {
+                var _a = isAnyBubbleOutOfPosition(), result = _a.result, array = _a.array;
+                var ignoreCollisions = true;
+                if (result) {
+                    if (isAnyBubbleDragging()) {
+                        ignoreCollisions = false;
+                        // Process collisions for displaced bubbles
+                        for (var i = 0; i < array.length; i++) {
+                            var previouslyChecked = new Set(array.slice(0, i));
+                            for (var _i = 0, items_5 = items; _i < items_5.length; _i++) {
+                                var item = items_5[_i];
+                                if (array[i] === item.id || previouslyChecked.has(item.id))
+                                    continue;
+                                if (checkCollision(array[i], item.id).isColliding) {
+                                    handleCollision(array[i], item.id);
+                                }
                             }
                         }
                     }
+                    updateUI();
+                    moveBubblesBackToInitialPositions(ignoreCollisions);
                 }
-                updateUI();
-                moveBubblesBackToInitialPositions(ignoreCollisions);
-            }
-            timeoutId = setTimeout(runLoop, 1000 / K.FPS_LOGIC);
-        };
-        // Start loop
-        timeoutId = setTimeout(runLoop, 1000 / K.FPS_LOGIC);
-        // Cleanup on component unmount
-        return function () {
-            clearTimeout(timeoutId);
-            // clearTimeout(uiTimeoutId);
-            if (animationFrameRef.current) {
-                cancelAnimationFrame(animationFrameRef.current);
-            }
-        };
+                timeoutId_1 = setTimeout(runLoop_1, 1000 / K.FPS_LOGIC);
+            };
+            // Start loop
+            timeoutId_1 = setTimeout(runLoop_1, 1000 / K.FPS_LOGIC);
+            // Cleanup on component unmount
+            return function () {
+                clearTimeout(timeoutId_1);
+                // clearTimeout(uiTimeoutId);
+                if (animationFrameRef.current) {
+                    cancelAnimationFrame(animationFrameRef.current);
+                }
+            };
+        }
     }, []);
     /**
      * Memoized Component Rendering

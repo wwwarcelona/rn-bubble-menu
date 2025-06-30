@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { View, ViewStyle } from 'react-native';
+import { Platform, View, ViewStyle } from 'react-native';
 import type { BubbleProps, BubbleStyleProps, Position } from './BubbleWrapper';
 import BubbleWrapper from './BubbleWrapper';
 import { K } from './constants';
@@ -368,51 +368,55 @@ const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius = 50, col
    * Has physics logic and UI updates with optimal performance
    */
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
+    // Below Android 10 collisions are disabled
+    if (Platform.OS === 'ios' || (Platform.OS === 'android' && Platform.Version > 28)) {
+      let timeoutId: NodeJS.Timeout;
     
-    /**
-     * UI, Physics and Logic Loop
-     * Processes collision detection, resolution, and position updates
-     * Updates the UI
-     */
-    const runLoop = () => {
-      const { result, array } = isAnyBubbleOutOfPosition();
-      let ignoreCollisions = true;
-
-      if (result) {
-        if (isAnyBubbleDragging()) {
-          ignoreCollisions = false;
-          // Process collisions for displaced bubbles
-          for (let i = 0; i < array.length; i++) {
-            const previouslyChecked = new Set(array.slice(0, i));
-            
-            for (const item of items) {
-              if (array[i] === item.id || previouslyChecked.has(item.id)) continue;
+      /**
+       * UI, Physics and Logic Loop
+       * Processes collision detection, resolution, and position updates
+       * Updates the UI
+       */
+      const runLoop = () => {
+        const { result, array } = isAnyBubbleOutOfPosition();
+        let ignoreCollisions = true;
+  
+        if (result) {
+          if (isAnyBubbleDragging()) {
+            ignoreCollisions = false;
+            // Process collisions for displaced bubbles
+            for (let i = 0; i < array.length; i++) {
+              const previouslyChecked = new Set(array.slice(0, i));
               
-              if (checkCollision(array[i], item.id).isColliding) {
-                handleCollision(array[i], item.id);
+              for (const item of items) {
+                if (array[i] === item.id || previouslyChecked.has(item.id)) continue;
+                
+                if (checkCollision(array[i], item.id).isColliding) {
+                  handleCollision(array[i], item.id);
+                }
               }
             }
-          }
-        } 
-        updateUI();
-        moveBubblesBackToInitialPositions(ignoreCollisions);        
-      }
+          } 
+          updateUI();
+          moveBubblesBackToInitialPositions(ignoreCollisions);        
+        }
+        
+        timeoutId = setTimeout(runLoop, 1000 / K.FPS_LOGIC);
+      };
       
+      // Start loop
       timeoutId = setTimeout(runLoop, 1000 / K.FPS_LOGIC);
-    };
-    
-    // Start loop
-    timeoutId = setTimeout(runLoop, 1000 / K.FPS_LOGIC);
-    
-    // Cleanup on component unmount
-    return () => {
-      clearTimeout(timeoutId);
-      // clearTimeout(uiTimeoutId);
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-    };
+      
+      // Cleanup on component unmount
+      return () => {
+        clearTimeout(timeoutId);
+        // clearTimeout(uiTimeoutId);
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current);
+        }
+      };
+    }
+ 
   }, []);
 
   /**
