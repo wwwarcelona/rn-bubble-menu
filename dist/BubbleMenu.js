@@ -53,7 +53,7 @@ var BubbleMenu = function (_a) {
         if (bubbleFreedom) {
             return {
                 x: pos.x,
-                y: pos.y
+                y: Math.max(0, pos.y)
             };
         }
         else {
