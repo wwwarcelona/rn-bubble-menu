@@ -27,7 +27,7 @@ import { styles } from './styles';
  *
  */
 var BubbleMenu = function (_a) {
-    var items = _a.items, menuDistance = _a.menuDistance, height = _a.height, width = _a.width, _b = _a.bubbleRadius, bubbleRadius = _b === void 0 ? 50 : _b, _c = _a.collisionRadius, collisionRadius = _c === void 0 ? 20 : _c, _d = _a.menuRotation, menuRotation = _d === void 0 ? 4 : _d, style = _a.style, bubbleComponent = _a.bubbleComponent;
+    var items = _a.items, menuDistance = _a.menuDistance, height = _a.height, width = _a.width, _b = _a.bubbleRadius, bubbleRadius = _b === void 0 ? 50 : _b, _c = _a.collisionRadius, collisionRadius = _c === void 0 ? 20 : _c, _d = _a.menuRotation, menuRotation = _d === void 0 ? 4 : _d, _e = _a.bubbleFreedom, bubbleFreedom = _e === void 0 ? true : _e, style = _a.style, bubbleComponent = _a.bubbleComponent;
     console.log("BubbleMenu Rendered", new Date().toISOString());
     // Calculate viewport center coordinates for menu positioning
     var centerX = width / 2;
@@ -50,10 +50,20 @@ var BubbleMenu = function (_a) {
         x: Math.max(40, Math.min(width - radius * 2 - 40, pos.x)),
         y: Math.max(0, Math.min(height - radius * 2, pos.y))
     }); }, [width, height]);
-    var clampPosition = useCallback(function (pos, radius) { return ({
-        x: Math.max(0, Math.min(width - radius * 2, pos.x)),
-        y: Math.max(0, Math.min(height - radius * 2, pos.y))
-    }); }, [width, height]);
+    var clampPosition = useCallback(function (pos, radius) {
+        if (bubbleFreedom) {
+            return {
+                x: pos.x,
+                y: pos.y
+            };
+        }
+        else {
+            return {
+                x: Math.max(0, Math.min(width - radius * 2, pos.x)),
+                y: Math.max(0, Math.min(height - radius * 2, pos.y))
+            };
+        }
+    }, [width, height, bubbleFreedom]);
     /**
      * Calculate initial bubble positions in circular layout
      * First item is center, remaining items are distributed in a circle

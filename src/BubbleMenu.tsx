@@ -28,6 +28,7 @@ interface BubbleMenuProps {
   bubbleRadius?: number // Radius of each bubble (default: 50px)
   collisionRadius?: number // Radius for collision detection (default: 20px)
   menuRotation?: number // Number used to rotate the bubble
+  bubbleFreedom?: boolean // If 'true' bubbles can move freely, if 'false' bubbles can only move within bounds.
   style?: BubbleMenuStyleProps // Style overrides for menu components
   bubbleComponent?: React.ComponentType<BubbleProps>; // Custom bubble component renderer
 }
@@ -56,7 +57,7 @@ type BubbleRef = {
  * - Memory-efficient ref-based position tracking
  *
  */
-const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius = 50, collisionRadius = 20, menuRotation = 4, style, bubbleComponent } : BubbleMenuProps) => {
+const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius = 50, collisionRadius = 20, menuRotation = 4, bubbleFreedom = true, style, bubbleComponent } : BubbleMenuProps) => {
   console.log("BubbleMenu Rendered", new Date().toISOString());
   
   // Calculate viewport center coordinates for menu positioning
@@ -84,10 +85,19 @@ const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius = 50, col
     y: Math.max(0, Math.min(height - radius * 2, pos.y))
   }), [width, height]);
 
-  const clampPosition = useCallback((pos: Position, radius: number): Position => ({
-    x: Math.max(0, Math.min(width - radius * 2, pos.x)),
-    y: Math.max(0, Math.min(height - radius * 2, pos.y))
-  }), [width, height]);
+const clampPosition = useCallback((pos: Position, radius: number): Position => {
+  if (bubbleFreedom) {
+    return {
+      x: pos.x,
+      y: pos.y
+    };
+  } else {
+    return {
+      x: Math.max(0, Math.min(width - radius * 2, pos.x)),
+      y: Math.max(0, Math.min(height - radius * 2, pos.y))
+    };
+  }
+}, [width, height, bubbleFreedom]);
 
   /**
    * Calculate initial bubble positions in circular layout
