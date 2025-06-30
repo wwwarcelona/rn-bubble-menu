@@ -88,8 +88,6 @@ const BubbleWrapper = forwardRef<any, BubbleWrapperProps>(({
   height,
   width,
 }, ref) => {
-  console.log("BubbleWrapper Rendered: ", item.id);
-
   // Extract bubble configuration with sensible defaults
   const { id, originalX = 0, originalY = 0, radius = 50, onPress } = item;
 

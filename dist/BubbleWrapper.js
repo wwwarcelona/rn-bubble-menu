@@ -32,7 +32,6 @@ import { styles } from './styles';
 var BubbleWrapper = forwardRef(function (_a, ref) {
     var _b;
     var item = _a.item, _c = _a.bubbleComponent, BubbleComponent = _c === void 0 ? DefaultBubble : _c, updateBubblePositions = _a.updateBubblePositions, height = _a.height, width = _a.width;
-    console.log("BubbleWrapper Rendered: ", item.id);
     // Extract bubble configuration with sensible defaults
     var id = item.id, _d = item.originalX, originalX = _d === void 0 ? 0 : _d, _e = item.originalY, originalY = _e === void 0 ? 0 : _e, _f = item.radius, radius = _f === void 0 ? 50 : _f, onPress = item.onPress;
     /**

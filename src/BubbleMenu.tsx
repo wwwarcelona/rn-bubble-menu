@@ -57,9 +57,7 @@ type BubbleRef = {
  * - Memory-efficient ref-based position tracking
  *
  */
-const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius = 50, collisionRadius = 20, menuRotation = 4, bubbleFreedom = true, style, bubbleComponent } : BubbleMenuProps) => {
-  console.log("BubbleMenu Rendered", new Date().toISOString());
-  
+const BubbleMenu = ({ items, menuDistance, height, width, bubbleRadius = 50, collisionRadius = 20, menuRotation = 4, bubbleFreedom = true, style, bubbleComponent } : BubbleMenuProps) => {  
   // Calculate viewport center coordinates for menu positioning
   const centerX = width / 2;
   const centerY = height / 2;
@@ -120,7 +118,6 @@ const clampPosition = useCallback((pos: Position, radius: number): Position => {
   // Initialize position tracking on mount - only runs once to prevent layout shifts
   useEffect(() => {
     bubblePositionsRef.current = { ...initialPositions };
-    console.log("Bubble Positions: ", bubblePositionsRef.current)
   }, [initialPositions]);
 
   /**
