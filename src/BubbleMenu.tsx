@@ -87,7 +87,7 @@ const clampPosition = useCallback((pos: Position, radius: number): Position => {
   if (bubbleFreedom) {
     return {
       x: pos.x,
-      y: pos.y
+      y: Math.max(0, pos.y)
     };
   } else {
     return {
