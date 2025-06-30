@@ -199,12 +199,9 @@ var BubbleWrapper = forwardRef(function (_a, ref) {
             (_b = item.style) === null || _b === void 0 ? void 0 : _b.container,
             animatedStyle,
         ] }, panResponder.panHandlers),
-        React.createElement(Pressable, { key: item.key, style: function (_a) {
-                var pressed = _a.pressed;
-                return ({
-                    opacity: pressed ? 0.8 : 1, // Simple opacity feedback for touch
-                });
-            }, onPressOut: handlePress },
-            React.createElement(BubbleComponent, __assign({}, item, { radius: radius })))));
+        React.createElement(Pressable, { key: item.key, onPressOut: handlePress }, function (_a) {
+            var pressed = _a.pressed;
+            return (React.createElement(BubbleComponent, __assign({}, item, { radius: radius, isPressed: pressed })));
+        })));
 });
 export default React.memo(BubbleWrapper);

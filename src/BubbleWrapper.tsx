@@ -42,6 +42,7 @@ export interface BubbleProps {
   style?: BubbleStyleProps; // Style overrides for customization
   key?: string;           // React key for list rendering optimization
   onPress?: () => void;   // Touch handler for bubble interactions
+  isPressed?: boolean;    // Optional prop to indicate pressed state
 }
 
 /**
@@ -289,25 +290,17 @@ const BubbleWrapper = forwardRef<any, BubbleWrapperProps>(({
         ]}
         {...panResponder.panHandlers}
       >
-        {/* 
-          Pressable wrapper for touch feedback and press handling
-          Provides visual feedback during touch interactions
-        */}
         <Pressable
           key={item.key}
-          style={({ pressed }) => ({
-            opacity: pressed ? 0.8 : 1, // Simple opacity feedback for touch
-          })}
           onPressOut={handlePress} // Execute bubble's onPress callback
         >
-          {/* 
-            Render the actual bubble component
-            Can be customized via bubbleComponent prop or defaults to DefaultBubble
-          */}
-          <BubbleComponent
-              {...item}
-              radius={radius}
-          />
+          {({ pressed }) => (
+            <BubbleComponent
+                {...item}
+                radius={radius}
+                isPressed={pressed}
+            />
+          )}
         </Pressable>
       </Animated.View>
   );

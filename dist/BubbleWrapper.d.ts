@@ -24,6 +24,7 @@ export interface BubbleProps {
     style?: BubbleStyleProps;
     key?: string;
     onPress?: () => void;
+    isPressed?: boolean;
 }
 /**
  * Props interface for the BubbleWrapper component
