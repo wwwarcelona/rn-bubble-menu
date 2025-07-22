@@ -9,9 +9,23 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Platform, View } from 'react-native';
 import BubbleWrapper from './BubbleWrapper';
+import BubbleWrapperAndroid from './BubbleWrapperAndroid';
+import CircularView from './CircularView/CircularLayout';
+import { SnapAngle } from './CircularView/constants';
 import { K } from './constants';
 import { styles } from './styles';
 /**
@@ -72,7 +86,7 @@ var BubbleMenu = function (_a) {
         var positions = {};
         items.forEach(function (item, index) {
             var angle = index === 0 ? 0 : (index * (2 * Math.PI)) / (items.length - 1) - Math.PI / menuRotation;
-            var radius = menuDistance + 130; // Additional offset for better spacing
+            var radius = menuDistance + 40; // Additional offset for better spacing
             var distance = index === 0 ? 0 : radius;
             var x = centerX + Math.cos(angle) * distance - bubbleRadius;
             var y = centerY + Math.sin(angle) * distance - bubbleRadius;
@@ -376,6 +390,14 @@ var BubbleMenu = function (_a) {
                 }
             } }));
     }, [items[0], bubbleRadius, initialPositions, style === null || style === void 0 ? void 0 : style.bubble, bubbleComponent, updateBubblePosition, height, width]);
+    var centerBubbleAndroid = useMemo(function () {
+        var _a = items[0], key = _a.key, itemProps = __rest(_a, ["key"]); // Extract key from item props
+        return (React.createElement(BubbleWrapperAndroid, { key: items[0].id, item: __assign(__assign({}, itemProps), { radius: bubbleRadius }), bubbleComponent: bubbleComponent, updateBubblePositions: updateBubblePosition, height: height, width: width, ref: function (ref) {
+                if (ref) {
+                    bubbleRefs.current[items[0].id] = ref;
+                }
+            } }));
+    }, [items[0], bubbleRadius, initialPositions, style === null || style === void 0 ? void 0 : style.bubble, bubbleComponent, updateBubblePosition, height, width]);
     // Surrounding bubbles - arranged in a circle around the center
     var surroundingBubbles = useMemo(function () {
         return items.slice(1).map(function (item) {
@@ -387,8 +409,20 @@ var BubbleMenu = function (_a) {
                 } }));
         });
     }, [items, bubbleRadius, initialPositions, style === null || style === void 0 ? void 0 : style.bubble, bubbleComponent, updateBubblePosition, height, width]);
-    return (React.createElement(View, { style: [styles.container, style === null || style === void 0 ? void 0 : style.container] },
+    // Surrounding bubbles - arranged in a circle around the center
+    var surroundingBubblesAndroid = useMemo(function () {
+        return items.slice(1).map(function (item) {
+            var key = item.key, itemProps = __rest(item, ["key"]); // Extract key from item props
+            return (React.createElement(BubbleWrapperAndroid, { key: item.id, item: __assign(__assign({}, itemProps), { radius: bubbleRadius }), bubbleComponent: bubbleComponent, updateBubblePositions: updateBubblePosition, height: height, width: width, ref: function (ref) {
+                    if (ref) {
+                        bubbleRefs.current[item.id] = ref;
+                    }
+                } }));
+        });
+    }, [items, bubbleRadius, initialPositions, style === null || style === void 0 ? void 0 : style.bubble, bubbleComponent, updateBubblePosition, height, width]);
+    return (React.createElement(React.Fragment, null, Platform.OS === 'ios' ? (React.createElement(View, { style: [styles.container, style === null || style === void 0 ? void 0 : style.container] },
         surroundingBubbles,
-        centerBubble));
+        centerBubble)) : (React.createElement(React.Fragment, null,
+        React.createElement(CircularView, { radiusX: menuDistance, radiusY: menuDistance + 20, snappingEnabled: true, centralComponent: centerBubbleAndroid, snapAngle: SnapAngle.BOTTOM }, surroundingBubblesAndroid)))));
 };
 export default React.memo(BubbleMenu);

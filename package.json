@@ -1,6 +1,6 @@
 {
   "name": "@nilcamprubi/react-native-bubble-menu",
-  "version": "2.0.1",
+  "version": "2.0.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "react-native-gesture-handler": "^2.26.0",
+    "react-native-reanimated": "^3.18.0",
     "react-native-shadow-2": "^7.1.1"
   },
   "packageManager": "yarn@4.9.2+sha512.1fc009bc09d13cfd0e19efa44cbfc2b9cf6ca61482725eb35bbc5e257e093ebf4130db6dfe15d604ff4b79efd8e1e8e99b25fa7d0a6197c9f9826358d4d65c3c"

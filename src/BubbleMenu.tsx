@@ -2,6 +2,9 @@ import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Platform, View, ViewStyle } from 'react-native';
 import type { BubbleProps, BubbleStyleProps, Position } from './BubbleWrapper';
 import BubbleWrapper from './BubbleWrapper';
+import BubbleWrapperAndroid from './BubbleWrapperAndroid';
+import CircularView from './CircularView/CircularLayout';
+import { SnapAngle } from './CircularView/constants';
 import { K } from './constants';
 import { styles } from './styles';
 
@@ -106,7 +109,7 @@ const clampPosition = useCallback((pos: Position, radius: number): Position => {
     const positions: Record<string, Position> = {};
     items.forEach((item, index) => {
       const angle = index === 0 ? 0 : (index * (2 * Math.PI)) / (items.length - 1) - Math.PI / menuRotation;
-      const radius = menuDistance + 130; // Additional offset for better spacing
+      const radius = menuDistance + 40; // Additional offset for better spacing
       const distance = index === 0 ? 0 : radius;
       const x = centerX + Math.cos(angle) * distance - bubbleRadius;
       const y = centerY + Math.sin(angle) * distance - bubbleRadius;
@@ -454,6 +457,28 @@ const clampPosition = useCallback((pos: Position, radius: number): Position => {
     />
   ), [items[0], bubbleRadius, initialPositions, style?.bubble, bubbleComponent, updateBubblePosition, height, width]);
 
+  const centerBubbleAndroid = useMemo(() => {
+      const { key, ...itemProps } = items[0]; // Extract key from item props
+      return (
+        <BubbleWrapperAndroid 
+          key={items[0].id}
+          item={{
+            ...itemProps,
+            radius: bubbleRadius,
+          }}
+          bubbleComponent={bubbleComponent}
+          updateBubblePositions={updateBubblePosition}
+          height={height}
+          width={width}
+          ref={(ref: BubbleRef) => {
+            if (ref) {
+              bubbleRefs.current[items[0].id] = ref;
+            }
+          }}
+        />
+      );
+  }, [items[0], bubbleRadius, initialPositions, style?.bubble, bubbleComponent, updateBubblePosition, height, width]);
+
   // Surrounding bubbles - arranged in a circle around the center
   const surroundingBubbles = useMemo(() => 
     items.slice(1).map((item) => (
@@ -479,11 +504,46 @@ const clampPosition = useCallback((pos: Position, radius: number): Position => {
     ))
   , [items, bubbleRadius, initialPositions, style?.bubble, bubbleComponent, updateBubblePosition, height, width]);
 
+  // Surrounding bubbles - arranged in a circle around the center
+  const surroundingBubblesAndroid = useMemo(() => 
+    items.slice(1).map((item) => {
+      const { key, ...itemProps } = item; // Extract key from item props
+      return (
+        <BubbleWrapperAndroid 
+          key={item.id}
+          item={{
+            ...itemProps,
+            radius: bubbleRadius,
+          }}
+          bubbleComponent={bubbleComponent}
+          updateBubblePositions={updateBubblePosition}
+          height={height}
+          width={width}
+          ref={(ref: BubbleRef) => {
+            if (ref) {
+              bubbleRefs.current[item.id] = ref;
+            }
+          }}
+        />
+      );
+    })
+  , [items, bubbleRadius, initialPositions, style?.bubble, bubbleComponent, updateBubblePosition, height, width]);
+
   return (
-    <View style={[styles.container, style?.container]}>
-      {surroundingBubbles}
-      {centerBubble}
-    </View>
+    <>
+      {Platform.OS === 'ios' ? (
+        <View style={[styles.container, style?.container]}>
+          {surroundingBubbles}
+          {centerBubble}
+        </View>
+      ) : (
+        <>
+        <CircularView radiusX={menuDistance} radiusY={menuDistance+20} snappingEnabled={true} centralComponent={centerBubbleAndroid} snapAngle={SnapAngle.BOTTOM}>
+          {surroundingBubblesAndroid}
+        </CircularView>
+        </>
+      )}
+    </>
   );
 };
 
